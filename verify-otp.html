@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Verify OTP</title>
+
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+
+    <link
+        rel="stylesheet"
+        href="css/auth.css">
+
+</head>
+
+
+<body>
+
+
+<div class="auth-container">
+
+
+    <div class="auth-card">
+
+
+        <div class="auth-logo">
+
+            <i class="bi bi-envelope-check"></i>
+
+        </div>
+
+
+        <div class="auth-title">
+
+            <h2>
+                Verify OTP
+            </h2>
+
+            <p>
+                Enter the 6-digit OTP
+            </p>
+
+        </div>
+
+
+        <form id="otpForm">
+
+
+            <div class="mb-3">
+
+                <label
+                    for="otp"
+                    class="form-label">
+
+                    OTP
+
+                </label>
+
+
+                <input
+                    type="text"
+                    id="otp"
+                    class="form-control text-center"
+                    placeholder="Enter 6-digit OTP"
+                    maxlength="6"
+                    inputmode="numeric"
+                    required>
+
+            </div>
+
+
+            <div
+                id="otpMessage"
+                class="auth-message">
+            </div>
+
+
+            <button
+                type="submit"
+                class="btn auth-btn w-100">
+
+                Verify OTP
+
+            </button>
+
+
+            <div class="text-center mt-4">
+
+                <a
+                    href="forgot-password.html"
+                    class="auth-link">
+
+                    Send OTP Again
+
+                </a>
+
+            </div>
+
+
+        </form>
+
+
+    </div>
+
+
+</div>
+
+
+<script src="js/verify-otp.js"></script>
+
+
+</body>
+
+</html>

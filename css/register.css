@@ -1,0 +1,123 @@
+/* =====================================================
+   BODY
+===================================================== */
+
+body {
+
+    margin: 0;
+
+    min-height: 100vh;
+
+    background-color: #f4f6f9;
+
+    font-family: Arial, sans-serif;
+
+}
+
+
+/* =====================================================
+   REGISTER CONTAINER
+===================================================== */
+
+.register-container {
+
+    width: 100%;
+
+    max-width: 600px;
+
+    margin: 40px auto;
+
+    padding: 20px;
+
+}
+
+
+/* =====================================================
+   REGISTER CARD
+===================================================== */
+
+.register-card {
+
+    background-color: white;
+
+    padding: 35px;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 4px 20px rgba(0, 0, 0, 0.1);
+
+}
+
+
+/* =====================================================
+   TITLE
+===================================================== */
+
+.register-title {
+
+    text-align: center;
+
+    margin-bottom: 25px;
+
+}
+
+
+.register-title h3 {
+
+    font-weight: 600;
+
+}
+
+
+.register-title p {
+
+    color: #6c757d;
+
+}
+
+
+/* =====================================================
+   FORM
+===================================================== */
+
+.form-label {
+
+    font-weight: 500;
+
+}
+
+
+.form-control {
+
+    padding: 10px;
+
+}
+
+
+/* =====================================================
+   PASSWORD INFORMATION
+===================================================== */
+
+.password-info {
+
+    display: block;
+
+    margin-top: 5px;
+
+    color: #6c757d;
+
+}
+
+
+/* =====================================================
+   MESSAGE
+===================================================== */
+
+#registerMessage {
+
+    font-size: 14px;
+
+    text-align: center;
+
+}

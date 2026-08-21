@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+```
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>
+    Library Management System 
+</title>
+
+<link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet">
+
+<link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<link
+    rel="stylesheet"
+    href="css/style.css">
+
+
+</head>
+
+<body>
+
+
+<aside id="sidebar" class="sidebar">
+
+    <div class="sidebar-header">
+
+        <i class="bi bi-journals"></i>
+        <span>
+            
+            Library Management System
+        </span>
+
+    </div>
+
+    <ul class="sidebar-menu">
+
+        <li>
+            <a href="index.html" class="active">
+
+                <i class="bi bi-columns-gap"></i>
+
+                <span>Dashboard</span>
+
+            </a>
+        </li>
+
+        <li>
+            <a href="books.html">
+
+                <i class="bi bi-journal-bookmark-fill"></i>
+
+                <span>Books</span>
+
+            </a>
+        </li>
+
+        <li>
+            <a href="members.html">
+
+                <i class="bi  bi-people"></i>
+
+                <span>Members</span>
+
+            </a>
+        </li>
+
+        <li>
+            <a href="issue-return.html">
+
+                <i class="bi bi-arrow-left-right"></i>
+
+                <span>Issue / Return</span>
+
+            </a>
+        </li>
+
+        <li>
+            <a href="profile.html">
+
+                <i class="bi bi-person-circle"></i>
+
+                <span>Profile</span>
+
+            </a>
+        </li>
+
+    </ul>
+
+</aside>
+
+<!-- =====================================================
+     MAIN CONTENT
+====================================================== -->
+
+<main class="main-content">
+
+
+    <!-- =================================================
+         NAVBAR
+    ================================================== -->
+
+    <nav class="navbar bg-white shadow-sm px-3 mb-4">
+
+        <!-- SIDEBAR BUTTON -->
+
+        <button
+            type="button"
+            id="sidebarToggle"
+            class="btn btn-outline-primary"
+            aria-label="Toggle sidebar">
+
+            <i class="bi bi-list"></i>
+
+        </button>
+
+
+        <!-- PAGE TITLE -->
+
+        <span class="navbar-brand ms-3">
+            Dashboard
+        </span>
+
+
+        <!-- =================================================
+             RIGHT SIDE OF HEADER
+        ================================================== -->
+
+        <div class="ms-auto d-flex align-items-center gap-3">
+
+
+            <!-- =============================================
+                 NOTIFICATION
+            ============================================== -->
+
+            <div class="notification-wrapper">
+
+                <button
+                    type="button"
+                    class="notification-btn"
+                    id="notificationBtn"
+                    aria-label="Notifications">
+
+                    <i class="bi bi-bell fs-4 "></i>
+
+
+                    <span
+                        class="notification-badge"
+                        id="notificationBadge">
+
+                        0
+
+                    </span>
+
+                </button>
+
+
+
+                <!-- NOTIFICATION PANEL -->
+
+                <div
+                    class="notification-panel"
+                    id="notificationPanel">
+
+
+                    <!-- HEADER -->
+
+                    <div class="notification-header">
+
+
+                        <h6 class="mb-0">
+
+                            Notifications
+
+                        </h6>
+
+
+                        <div class="d-flex align-items-center">
+
+
+                            <!-- MARK ALL READ -->
+
+                            <button
+                                type="button"
+                                class="btn btn-sm btn-link"
+                                id="markAllReadBtn">
+
+                                <i class="bi bi-check2-all"></i>
+
+                                Mark all as read
+
+                            </button>
+
+
+                            <!-- CLEAR ALL -->
+
+                            <button
+                                type="button"
+                                id="clearAllNotifications"
+                                class="btn btn-sm btn-link text-danger">
+
+                                <i class="bi bi-trash"></i>
+
+                                Clear All
+
+                            </button>
+
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <!-- NOTIFICATION LIST -->
+
+                    <div
+                        class="notification-list"
+                        id="notificationList">
+                    </div>
+
+
+
+                    <!-- EMPTY MESSAGE -->
+
+                    <div
+                        class="notification-empty text-center p-4"
+                        id="notificationEmpty">
+
+                        <i
+                            class="bi bi-bell-slash fs-2 text-muted">
+                        </i>
+
+
+                        <p class="text-muted mb-0 mt-2">
+
+                            No new notifications
+
+                        </p>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+
+           <!-- =============================================
+                 SETTINGS ICON
+            ============================================== -->
+
+            <a
+                href="settings.html"
+                class="navbar-setting-icon"
+                title="Settings"
+                aria-label="Settings">
+
+                <i class="bi bi-gear fs-4"></i>
+
+            </a>       
+
+
+            <!-- =============================================
+                 PROFILE
+            ============================================== -->
+
+            <a
+                href="profile.html"
+                class="navbar-profile-icon"
+                title="Profile"
+                aria-label="Profile">
+
+                <i class="bi bi-person-circle fs-3"></i>
+
+            </a>
+
+
+        </div>
+
+    </nav>
+
+
+    <!-- =================================================
+         PAGE TITLE
+    ================================================== -->
+
+    <div class="mb-4">
+
+
+        <h2>
+
+            Dashboard
+
+        </h2>
+
+
+        <p class="text-muted">
+
+            Welcome to the Library Management System
+
+        </p>
+
+
+    </div>
+
+
+    <!-- =================================================
+     LIBRARY STATISTICS PIE CHART
+================================================== -->
+
+<div class="row g-4 mb-4">
+
+    <div class="col-12">
+
+        <div class="card shadow-sm h-100">
+
+            <div class="card-body">
+
+                <h4 class="mb-4">
+                    Library Statistics
+                </h4>
+
+                <div class="library-chart-container">
+
+                    <canvas id="libraryPieChart"></canvas>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+    <!-- =================================================
+         ISSUED BOOKS TABLE
+    ================================================== -->
+
+    <div class="card shadow-sm mb-4">
+
+
+        <div class="card-header bg-white">
+
+
+            <div
+                class="d-flex
+                       justify-content-between
+                       align-items-center">
+
+
+                <div>
+
+                    <h5 class="mb-1">
+
+                        <i
+                            class="bi bi-journal-arrow-up me-2">
+                        </i>
+
+                        Issued Books
+
+                    </h5>
+
+
+                    <small
+                        class="text-muted">
+
+                         Books that have been issued 
+
+                    </small>
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+        <div class="card-body">
+
+
+            <div class="table-responsive">
+
+
+                <table
+                    class="table
+                           table-hover
+                           align-middle
+                           mb-0">
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                #
+                            </th>
+
+                            <th>
+                                Book ID
+                            </th>
+
+                            <th>
+                                Book
+                            </th>
+
+                            <th>
+                                Member
+                            </th>
+
+                            <th>
+                                Issued Date
+                            </th>
+
+                            <th>
+                                Return Date
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="IssuedBookstable">
+
+                        <tr>
+
+                            <td
+                                colspan="8"
+                                class="text-center text-muted py-4">
+
+                                No issued books found.
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+    <div class="d-flex justify-content-end mt-3">
+    <nav>
+        <ul class="pagination mb-0">
+
+            <li class="page-item disabled">
+                <button class="page-link" type="button">
+                    Previous
+                </button>
+            </li>
+
+            <li class="page-item active">
+                <button class="page-link" type="button">
+                    1
+                </button>
+            </li>
+
+            <li class="page-item">
+                <button class="page-link" type="button">
+                    2
+                </button>
+            </li>
+
+            <li class="page-item">
+                <button class="page-link" type="button">
+                    3
+                </button>
+            </li>
+
+            <li class="page-item">
+                <button class="page-link" type="button">
+                    Next
+                </button>
+            </li>
+
+        </ul>
+    </nav>
+</div>
+    <!-- =================================================
+         RETURNED BOOKS TABLE
+    ================================================== -->
+
+    <div class="card shadow-sm mb-4">
+
+
+        <div class="card-header bg-white">
+
+
+            <div
+                class="d-flex
+                       justify-content-between
+                       align-items-center">
+
+
+                <div>
+
+                    <h5 class="mb-1">
+
+                        <i
+                            class="bi bi-journal-check me-2">
+                        </i>
+
+                        Returned Books
+
+                    </h5>
+
+
+                    <small
+                        class="text-muted">
+
+                        Books that have been returned
+
+                    </small>
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+        <div class="card-body">
+
+
+            <div class="table-responsive">
+
+
+                <table
+                    class="table
+                           table-hover
+                           align-middle
+                           mb-0">
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                #
+                            </th>
+
+                            <th>
+                                Book ID
+                            </th>
+
+                            <th>
+                                Book
+                            </th>
+
+                            <th>
+                                Member
+                            </th>
+
+                            <th>
+                                Issued Date
+                            </th>
+
+                            <th>
+                                Returned Date
+                            </th>
+
+                            <th>
+                                Actual ReturnDate
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="returnedBooksTable">
+
+                        <tr>
+
+                            <td
+                                colspan="8"
+                                class="text-center text-muted py-4">
+
+                                No returned books found.
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+           <!-- RETURNED BOOKS PAGINATION -->
+    <div class="d-flex justify-content-end mt-3">
+    <nav>
+        <ul class="pagination mb-0">
+
+            <li class="page-item disabled">
+                <button class="page-link" type="button">
+                    Previous
+                </button>
+            </li>
+
+            <li class="page-item active">
+                <button class="page-link" type="button">
+                    1
+                </button>
+            </li>
+
+            <li class="page-item">
+                <button class="page-link" type="button">
+                    2
+                </button>
+            </li>
+
+            <li class="page-item">
+                <button class="page-link" type="button">
+                    3
+                </button>
+            </li>
+
+            <li class="page-item">
+                <button class="page-link" type="button">
+                    Next
+                </button>
+            </li>
+
+        </ul>
+    </nav>
+</div>
+
+<!-- =====================================================
+     BOOTSTRAP JAVASCRIPT
+====================================================== -->
+
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+</script>
+
+
+<!-- =====================================================
+     MAIN JAVASCRIPT
+====================================================== -->
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Your JavaScript -->
+<script src="js/script.js"></script>
+
+<div id="toastContainer"></div>
+
+</body>
+
+</html>

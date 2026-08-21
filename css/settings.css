@@ -1,0 +1,611 @@
+/* =====================================================
+   SETTINGS PAGE
+===================================================== */
+
+.settings-heading h2 {
+
+    font-weight: 600;
+}
+
+
+.settings-heading p {
+
+    margin-bottom: 0;
+}
+
+
+/* =====================================================
+   NAVBAR SETTINGS ICON
+===================================================== */
+
+.navbar-setting-icon {
+
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #212529;
+
+    text-decoration: none;
+
+    border-radius: 50%;
+
+    transition: 0.2s ease;
+}
+
+
+.navbar-setting-icon:hover {
+
+    color: #0d6efd;
+
+    background: #e7f1ff;
+}
+
+
+.active-setting-icon {
+
+    color: #0d6efd;
+
+    background: #e7f1ff;
+}
+
+
+/* =====================================================
+   SETTINGS TABS
+===================================================== */
+
+.settings-tabs {
+
+    display: flex;
+
+    gap: 10px;
+
+    padding: 10px;
+
+    overflow-x: auto;
+
+    background: white;
+
+    border-radius: 10px;
+
+    box-shadow:
+        0 2px 10px rgba(0, 0, 0, 0.06);
+}
+
+
+.settings-tab {
+
+    min-width: 160px;
+
+    padding: 10px 15px;
+
+    border: none;
+
+    border-radius: 7px;
+
+    background: transparent;
+
+    color: #495057;
+
+    font-size: 14px;
+
+    cursor: pointer;
+}
+
+
+.settings-tab:hover {
+
+    color: #0d6efd;
+
+    background: #eef4ff;
+}
+
+
+.settings-tab.active {
+
+    color: white;
+
+    background: #0d6efd;
+}
+
+
+/* =====================================================
+   SETTINGS SECTIONS
+===================================================== */
+
+.settings-section {
+
+    display: none;
+}
+
+
+.settings-section.active {
+
+    display: block;
+}
+
+
+/* =====================================================
+   ACCOUNT STATUS
+===================================================== */
+
+.account-status-box {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 20px;
+
+    padding: 15px;
+
+    background: #f8f9fa;
+
+    border-radius: 8px;
+}
+
+
+.status-badge {
+
+    padding: 7px 15px;
+
+    border-radius: 20px;
+
+    font-size: 13px;
+
+    font-weight: 600;
+}
+
+
+.status-active {
+
+    color: #0f5132;
+
+    background: #d1e7dd;
+}
+
+
+.status-inactive {
+
+    color: #842029;
+
+    background: #f8d7da;
+}
+
+
+/* =====================================================
+   LOGOUT BOX
+===================================================== */
+
+.logout-box {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 16px;
+
+    background: #fff5f5;
+
+    border: 1px solid #f5c2c7;
+
+    border-radius: 8px;
+}
+
+
+/* =====================================================
+   NOTIFICATIONS
+===================================================== */
+
+.notification-setting {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 18px 0;
+
+    border-bottom: 1px solid #e9ecef;
+}
+
+
+.notification-setting:last-child {
+
+    border-bottom: none;
+}
+
+
+.notification-setting h6 {
+
+    margin-bottom: 4px;
+}
+
+
+.notification-setting p {
+
+    margin: 0;
+
+    color: #6c757d;
+
+    font-size: 13px;
+}
+
+
+.form-switch .form-check-input {
+
+    width: 44px;
+
+    height: 23px;
+
+    cursor: pointer;
+}
+
+
+/* =====================================================
+   APPEARANCE
+===================================================== */
+
+.appearance-card {
+
+    position: relative;
+
+    display: block;
+
+    width: 100%;
+
+    padding: 30px;
+
+    text-align: center;
+
+    border: 2px solid #dee2e6;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+
+.appearance-card:hover {
+
+    border-color: #0d6efd;
+}
+
+
+.appearance-card.active {
+
+    border-color: #0d6efd;
+
+    background: #eef5ff;
+}
+
+
+.appearance-card input {
+
+    position: absolute;
+
+    top: 15px;
+
+    right: 15px;
+}
+
+
+.appearance-icon {
+
+    font-size: 45px;
+
+    color: #0d6efd;
+}
+
+
+.appearance-card p {
+
+    margin-bottom: 0;
+
+    color: #6c757d;
+}
+
+
+/* =====================================================
+   LOGOUT POPUP
+===================================================== */
+
+.logout-popup {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 20000;
+
+    display: none;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 20px;
+
+    background:
+        rgba(0, 0, 0, 0.55);
+}
+
+
+.logout-popup.show {
+
+    display: flex;
+}
+
+
+.logout-popup-card {
+
+    width: 100%;
+
+    max-width: 400px;
+
+    padding: 30px;
+
+    text-align: center;
+
+    background: white;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.25);
+}
+
+
+.logout-popup-icon {
+
+    width: 60px;
+    height: 60px;
+
+    margin:
+        0 auto 15px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    color: #dc3545;
+
+    background: #f8d7da;
+
+    border-radius: 50%;
+
+    font-size: 26px;
+}
+
+
+.logout-popup-buttons {
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 10px;
+
+    margin-top: 20px;
+}
+
+
+/* =====================================================
+   DARK MODE
+===================================================== */
+
+body.dark-mode {
+
+    background: #121212;
+
+    color: #f8f9fa;
+}
+
+
+body.dark-mode .main-content {
+
+    background: #121212;
+}
+
+
+body.dark-mode .navbar,
+body.dark-mode .card,
+body.dark-mode .settings-tabs,
+body.dark-mode .logout-popup-card {
+
+    background: #1f1f1f !important;
+
+    color: white;
+}
+
+
+body.dark-mode .navbar-brand {
+
+    color: white;
+}
+
+
+body.dark-mode .navbar-setting-icon {
+
+    color: #dee2e6;
+}
+
+
+body.dark-mode .card-header {
+
+    background: #1f1f1f !important;
+
+    border-color: #343a40;
+
+}
+
+
+body.dark-mode .form-control {
+
+    color: white;
+
+    background: #292929;
+
+    border-color: #495057;
+}
+
+
+body.dark-mode .form-control[readonly] {
+
+    color: #dee2e6;
+
+    background: #292929;
+}
+
+
+body.dark-mode .text-muted,
+body.dark-mode .notification-setting p,
+body.dark-mode .appearance-card p {
+
+    color: #adb5bd !important;
+}
+
+
+body.dark-mode .notification-setting {
+
+    border-color: #343a40;
+}
+
+
+body.dark-mode .account-status-box {
+    background: #1e293b !important;
+    border: 1px solid #095cd1;
+    color: #f10404;
+}
+
+/* Logout Box - Dark Mode */
+
+body.dark-mode .logout-box {
+    background: #2b1f21;
+    border-color: #842029;
+    color: #ffffff;
+}
+
+body.dark-mode .logout-box h6 {
+    color: #ff6b6b;
+}
+
+body.dark-mode .logout-box p {
+    color: #f1f1f1 !important;
+}
+
+
+body.dark-mode .appearance-card {
+
+    border-color: #495057;
+}
+
+
+body.dark-mode .appearance-card.active {
+
+    border-color: #6ea8fe;
+
+    background: #253448;
+}
+
+/* Active Badge - Dark Mode */
+
+body.dark-mode .status-active {
+    background: #198754 !important;
+    color: #ffffff !important;
+}
+
+
+/* Inactive Badge - Dark Mode */
+
+body.dark-mode .status-inactive {
+    background: #dc3545 !important;
+    color: #ffffff !important;
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 768px) {
+
+    .account-status-box,
+    .logout-box {
+
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+
+
+    .logout-box .btn {
+
+        width: 100%;
+    }
+
+}
+
+
+@media (max-width: 576px) {
+
+    .settings-tabs {
+
+        gap: 5px;
+    }
+
+
+    .settings-tab {
+
+        min-width: 135px;
+
+        font-size: 12px;
+    }
+
+
+    .notification-setting {
+
+        gap: 12px;
+    }
+
+
+    .notification-setting h6 {
+
+        font-size: 14px;
+    }
+
+
+    .notification-setting p {
+
+        font-size: 12px;
+    }
+
+
+    .logout-popup-buttons {
+
+        flex-direction: column-reverse;
+    }
+
+
+    .logout-popup-buttons .btn {
+
+        width: 100%;
+    }
+
+}

@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Library - Issue / Return</title>
+
+
+    <!-- =====================================================
+         BOOTSTRAP
+    ====================================================== -->
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+
+    <!-- =====================================================
+         BOOTSTRAP ICONS
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+
+    <!-- =====================================================
+         YOUR CSS
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="css/style.css">
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     SIDEBAR
+====================================================== -->
+
+<aside id="sidebar" class="sidebar">
+
+    <div class="sidebar-header">
+
+        <i class="bi bi-journals"></i>
+        <span>
+
+            
+
+            Library Management System
+
+        </span>
+
+    </div>
+
+
+    <ul class="sidebar-menu">
+
+        <li>
+
+            <a href="index.html">
+
+                <i class="bi bi-columns-gap"></i>
+
+                Dashboard
+
+            </a>
+
+        </li>
+
+
+        <li>
+
+            <a href="books.html">
+
+                <i class="bi bi-journal-bookmark-fill"></i>
+
+                Books
+
+            </a>
+
+        </li>
+
+
+        <li>
+
+            <a href="members.html">
+
+                <i class="bi bi-people"></i>
+
+                Members
+
+            </a>
+
+        </li>
+
+
+        <li>
+
+            <a href="issue-return.html"
+               class="active">
+
+                <i class="bi bi-arrow-left-right"></i>
+
+                Issue / Return
+
+            </a>
+
+        </li>
+
+
+        <li>
+
+            <a href="profile.html">
+
+                <i class="bi bi-person-circle"></i>
+
+                Profile
+
+            </a>
+
+        </li>
+
+    </ul>
+
+</aside>
+
+
+
+<!-- =====================================================
+     MAIN CONTENT
+====================================================== -->
+
+<div class="main-content">
+
+
+    <!-- =================================================
+         NAVBAR
+    ================================================== -->
+
+    <nav class="navbar bg-white shadow-sm px-3 mb-4">
+
+        <!-- SIDEBAR BUTTON -->
+
+        <button
+            type="button"
+            id="sidebarToggle"
+            class="btn btn-outline-primary"
+            aria-label="Toggle sidebar">
+
+            <i class="bi bi-list"></i>
+
+        </button>
+
+
+        <!-- PAGE TITLE -->
+
+        <span class="navbar-brand ms-3">
+            Issued/Return Book
+        </span>
+
+
+        <!-- RIGHT SIDE OF HEADER -->
+
+        <div class="ms-auto d-flex align-items-center">
+
+
+            <!-- =============================================
+                 NOTIFICATION
+            ============================================== -->
+
+            <div class="notification-wrapper me-3">
+
+                <button
+                    type="button"
+                    class="notification-btn"
+                    id="notificationBtn"
+                    aria-label="Notifications">
+
+                    <i class="bi bi-bell fs-4"></i>
+
+                    <span
+                        class="notification-badge"
+                        id="notificationBadge">
+                        0
+                    </span>
+
+                </button>
+
+
+                <!-- NOTIFICATION PANEL -->
+
+                <div
+                    class="notification-panel"
+                    id="notificationPanel">
+
+                    <div class="notification-header">
+
+                        <h6 class="mb-0">
+                            Notifications
+                        </h6>
+
+
+                        <!-- MARK ALL AS READ -->
+
+                        <button
+                            type="button"
+                            class="btn btn-sm btn-link"
+                            id="markAllReadBtn">
+
+                            <i class="bi bi-check2-all"></i>
+
+                            Mark all as read
+
+                        </button>
+
+
+                        <!-- CLEAR ALL -->
+
+                        <button
+                            type="button"
+                            id="clearAllNotifications"
+                            class="btn btn-sm btn-link text-danger">
+
+                            <i class="bi bi-trash"></i>
+
+                            Clear All
+
+                        </button>
+
+                    </div>
+
+
+                    <!-- NOTIFICATION LIST -->
+
+                    <div
+                        class="notification-list"
+                        id="notificationList">
+                    </div>
+
+
+                    <!-- EMPTY NOTIFICATION -->
+
+                    <div
+                        class="notification-empty text-center p-4"
+                        id="notificationEmpty">
+
+                        <i class="bi bi-bell-slash fs-2 text-muted"></i>
+
+                        <p class="text-muted mb-0 mt-2">
+                            No new notifications
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =============================================
+                 SETTINGS ICON
+            ============================================== -->
+
+            <a
+                href="settings.html"
+                class="navbar-setting-icon me-3"
+                title="Settings"
+                aria-label="Settings">
+
+                <i class="bi bi-gear fs-4"></i>
+
+            </a>
+
+
+            <!-- =============================================
+                 PROFILE ICON
+            ============================================== -->
+
+            <div>
+
+                <a
+                    href="profile.html"
+                    class="navbar-profile-icon"
+                    title="Profile"
+                    aria-label="Profile">
+
+                    <i class="bi bi-person-circle fs-3"></i>
+
+                </a>
+
+            </div>
+
+
+        </div>
+
+    </nav>
+
+
+    <!-- =================================================
+         PAGE CONTENT
+    ================================================== -->
+
+    <main class="container-fluid p-4">
+
+
+        <!-- PAGE TITLE -->
+
+        <div class="mb-4">
+
+            <h2>
+
+                Issue / Return Book
+
+            </h2>
+
+
+            <p class="text-muted">
+
+                Issue books to members and manage returned books.
+
+            </p>
+
+        </div>
+
+
+
+        <!-- =================================================
+             ISSUE BOOK FORM
+        ================================================== -->
+
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-header bg-white">
+
+                <h5 class="mb-0">
+
+                    <i class="bi bi-journal-arrow-up me-2"></i>
+
+                    Issue Book
+
+                </h5>
+
+            </div>
+
+
+            <div class="card-body">
+
+                <form id="issueForm">
+
+                    <div class="row g-3">
+
+
+                        <!-- BOOK -->
+
+                        <div class="col-md-6">
+
+                            <label
+                                for="issueBook"
+                                class="form-label">
+
+                                Select Book
+
+                            </label>
+
+
+                            <select
+                                id="issueBook"
+                                class="form-select"
+                                required>
+
+                                <option value="">
+
+                                    Select Book
+
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+
+                        <!-- MEMBER -->
+
+                        <div class="col-md-6">
+
+                            <label
+                                for="issueMember"
+                                class="form-label">
+
+                                Select Member
+
+                            </label>
+
+
+                            <select
+                                id="issueMember"
+                                class="form-select"
+                                required>
+
+                                <option value="">
+
+                                    Select Member
+
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+
+                        <!-- ISSUE DATE -->
+
+                        <div class="col-md-6">
+
+                            <label
+                                for="issueDate"
+                                class="form-label">
+
+                                Issue Date
+
+                            </label>
+
+
+                            <input
+                                type="date"
+                                id="issueDate"
+                                class="form-control"
+                                required>
+
+                        </div>
+
+
+
+                        <!-- RETURN DATE -->
+
+                        <div class="col-md-6">
+
+                            <label
+                                for="returnDate"
+                                class="form-label">
+
+                                Return / Due Date
+
+                            </label>
+
+
+                            <input
+                                type="date"
+                                id="returnDate"
+                                class="form-control"
+                                required>
+
+
+                            <small class="text-muted">
+
+                                Return date cannot be before
+                                the issue date.
+
+                            </small>
+
+                        </div>
+
+
+
+                        <!-- BUTTON -->
+
+                        <div class="col-12">
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary">
+
+                                <i
+                                    class="bi bi-journal-arrow-up me-1">
+                                </i>
+
+                                <span>
+
+                                     Issue Book
+                                </span>
+                               
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+
+
+       <!-- ================= ISSUED BOOKS ================= -->
+
+<div class="card mb-5">
+
+    <div class="card-header">
+        <h5 class="mb-3">ISSUED BOOK</h5>
+    </div>
+
+    <div class="table-responsive">
+
+        <table class="table table-hover mb-3">
+
+            <thead>
+                <tr>
+                    <th>Book</th>
+                    <th>Member</th>
+                    <th>Issued Date</th>
+                    <th>Return Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody id="issuedTableBody">
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <!-- Issued pagination -->
+    <div class="d-flex justify-content-end p-3">
+
+        <nav>
+            <ul
+                class="pagination mb-0"
+                id="issuedPagination">
+            </ul>
+        </nav>
+
+    </div>
+
+</div>
+
+
+<!-- ================= RETURNED BOOKS ================= -->
+
+<div class="card mb-5">
+
+    <div class="card-header">
+        <h5 class="mb-3">RETURNED BOOKS</h5>
+    </div>
+
+    <div class="table-responsive">
+
+        <table class="table table-hover mb-3">
+
+            <thead>
+                <tr>
+                    <th>Book</th>
+                    <th>Member</th>
+                    <th>Issued Date</th>
+                    <th>Return Date</th>
+                    <th>Actual Return Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody id="returnTableBody">
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <!-- Return pagination -->
+    <div class="d-flex justify-content-end p-2">
+
+        <nav>
+            <ul
+                class="pagination mb-0"
+                id="returnPagination">
+            </ul>
+        </nav>
+
+    </div>
+
+</div>
+
+
+   
+
+<!-- =====================================================
+     BOOTSTRAP JAVASCRIPT
+====================================================== -->
+
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+</script>
+
+
+
+<!-- =====================================================
+     MAIN JAVASCRIPT
+====================================================== -->
+
+<script src="js/script.js"></script>
+
+<div id="toastContainer"></div>
+
+
+</body>
+
+</html>
