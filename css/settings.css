@@ -46,10 +46,8 @@
 
 
 .active-setting-icon {
-
     color: #0d6efd;
-
-    background: #e7f1ff;
+    background: transparent !important;
 }
 
 
@@ -441,9 +439,80 @@ body.dark-mode .navbar-brand {
 }
 
 
-body.dark-mode .navbar-setting-icon {
+/* =====================================================
+   REMOVE CLICK / FOCUS CIRCLE
+   NOTIFICATION + SETTINGS ICON
+===================================================== */
 
-    color: #dee2e6;
+/* Notification Icon */
+
+.notification-btn,
+.notification-btn:hover,
+.notification-btn:focus,
+.notification-btn:active,
+.notification-btn:focus-visible {
+
+    background: transparent !important;
+    background-color: transparent !important;
+
+    box-shadow: none !important;
+
+    outline: none !important;
+
+    border: none !important;
+}
+
+
+/* Settings Icon */
+
+.navbar-setting-icon,
+.navbar-setting-icon:hover,
+.navbar-setting-icon:focus,
+.navbar-setting-icon:active,
+.navbar-setting-icon:focus-visible {
+
+    background: transparent !important;
+    background-color: transparent !important;
+
+    box-shadow: none !important;
+
+    outline: none !important;
+
+    border: none !important;
+}
+
+
+/* DARK MODE */
+
+body.dark-mode .notification-btn,
+body.dark-mode .notification-btn:hover,
+body.dark-mode .notification-btn:focus,
+body.dark-mode .notification-btn:active,
+body.dark-mode .notification-btn:focus-visible,
+
+body.dark-mode .navbar-setting-icon,
+body.dark-mode .navbar-setting-icon:hover,
+body.dark-mode .navbar-setting-icon:focus,
+body.dark-mode .navbar-setting-icon:active,
+body.dark-mode .navbar-setting-icon:focus-visible {
+
+    background: transparent !important;
+    background-color: transparent !important;
+
+    box-shadow: none !important;
+
+    outline: none !important;
+
+    border: none !important;
+}
+
+
+/* Keep Icons Visible */
+
+body.dark-mode .notification-btn i,
+body.dark-mode .navbar-setting-icon i {
+
+    color: #f1f1f1 !important;
 }
 
 

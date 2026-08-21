@@ -574,14 +574,34 @@ body.dark-mode .navbar-brand {
     color: #ffffff !important;
 }
 
-body.dark-mode .notification-btn, body.dark-mode .navbar-setting-icon, body.dark-mode .navbar-profile-icon {
-    color: #f8fafc !important;
+body.dark-mode .notification-btn,
+body.dark-mode .navbar-setting-icon,
+body.dark-mode .navbar-profile-icon {
+    color: #0467ca !important;
 }
 
-body.dark-mode .notification-btn:hover, body.dark-mode .navbar-setting-icon:hover, body.dark-mode .navbar-profile-icon:hover {
-    color: #60a5fa !important;
-    background-color: #334155;
+
+/* Notification bell - remove circle */
+body.dark-mode .notification-btn {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
 }
+
+
+/* Notification bell icon */
+body.dark-mode .notification-btn i {
+    color: #fcfcfc !important;
+}
+
+
+/* Notification bell hover - no circle */
+body.dark-mode .notification-btn:hover {
+    color: #60a5fa !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
 
 body.dark-mode .card i, body.dark-mode .settings-tabs i, body.dark-mode .appearance-card i {
     color: #60a5fa;
@@ -647,9 +667,9 @@ body.dark-mode .notification-header {
 }
 
 body.dark-mode .notification-item {
-    border-color: #374151;
+    border-color: #0867ff;
     background-color: #1e293b;
-    border-bottom-color: #334155;
+    border-bottom-color: #076fff;
 }
 
 body.dark-mode .notification-item.unread {
@@ -1909,4 +1929,48 @@ body.dark-mode #addMemberForm label {
     color: #db2777;
 }
 
+/* =====================================================
+   REMOVE SETTINGS ICON CIRCLE ON ALL PAGES
+===================================================== */
 
+.navbar-setting-icon,
+.navbar-setting-icon:hover,
+.navbar-setting-icon:focus,
+.navbar-setting-icon:active,
+.navbar-setting-icon:focus-visible,
+.navbar-setting-icon.active-setting-icon {
+
+    background: transparent !important;
+    background-color: transparent !important;
+
+    box-shadow: none !important;
+    outline: none !important;
+    border: none !important;
+}
+
+
+/* Dark Mode */
+
+body.dark-mode .navbar-setting-icon,
+body.dark-mode .navbar-setting-icon:hover,
+body.dark-mode .navbar-setting-icon:focus,
+body.dark-mode .navbar-setting-icon:active,
+body.dark-mode .navbar-setting-icon:focus-visible,
+body.dark-mode .navbar-setting-icon.active-setting-icon {
+
+    background: transparent !important;
+    background-color: transparent !important;
+
+    box-shadow: none !important;
+    outline: none !important;
+    border: none !important;
+
+    color: #e9ebec !important;
+}
+
+
+/* Keep actual gear icon visible */
+
+body.dark-mode .navbar-setting-icon i {
+    color: #f2f4f5 !important;
+}
