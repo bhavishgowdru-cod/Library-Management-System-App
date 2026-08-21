@@ -7053,8 +7053,11 @@ function displayNotifications() {
 list.innerHTML = "";
 
 
+list.innerHTML = "";
+
+
 /* =====================================================
-   FILTER NOTIFICATIONS USING SETTINGS
+   FILTER NOTIFICATIONS BASED ON SETTINGS
 ===================================================== */
 
 const settings =
@@ -7067,7 +7070,7 @@ const visibleNotifications =
     notifications.filter(
         function(notification) {
 
-            /* ALL NOTIFICATIONS OFF */
+            /* ALL NOTIFICATIONS */
 
             if (
                 settings.notificationsEnabled === false
@@ -7076,7 +7079,7 @@ const visibleNotifications =
             }
 
 
-            /* DUE DATE REMINDER OFF */
+            /* DUE DATE */
 
             if (
                 notification.type === "due" &&
@@ -7086,7 +7089,7 @@ const visibleNotifications =
             }
 
 
-            /* OVERDUE ALERT OFF */
+            /* OVERDUE */
 
             if (
                 notification.type === "overdue" &&
@@ -7096,7 +7099,7 @@ const visibleNotifications =
             }
 
 
-            /* BOOK ISSUE NOTIFICATION OFF */
+            /* BOOK ISSUE */
 
             if (
                 notification.type === "issued" &&
@@ -7106,7 +7109,7 @@ const visibleNotifications =
             }
 
 
-            /* BOOK RETURN NOTIFICATION OFF */
+            /* BOOK RETURN */
 
             if (
                 notification.type === "returned" &&
@@ -7117,11 +7120,14 @@ const visibleNotifications =
 
 
             return true;
+
         }
     );
 
 
-/* NO VISIBLE NOTIFICATIONS */
+/* =====================================================
+   NO VISIBLE NOTIFICATIONS
+===================================================== */
 
 if (visibleNotifications.length === 0) {
 
@@ -7138,43 +7144,99 @@ empty.style.display =
     "none";
 
 
-/* DISPLAY ONLY ENABLED NOTIFICATIONS */
+/* =====================================================
+   DISPLAY ONLY ENABLED NOTIFICATIONS
+===================================================== */
 
 visibleNotifications.forEach(
     function(notification) {
 
+        const item =
+            document.createElement(
+                "div"
+            );
 
 
-            item.innerHTML = `
-
-                <div class="notification-icon">
-
-                    <i class="bi bi-bell"></i>
-
-                </div>
-
-
-                <div class="notification-content">
-
-                    <strong>
-                        ${notification.title}
-                    </strong>
-
-                    <p>
-                        ${notification.description}
-                    </p>
-
-                    <small>
-                        ${notification.date}
-                    </small>
-
-                </div>
+        item.className =
+            `notification-item ${
+                notification.read
+                    ? "read"
+                    : "unread"
+            }`;
 
 
-                <div class="notification-actions">
+        item.style.cursor =
+            "pointer";
 
-                    ${
-                        !notification.read
+
+        /* NOTIFICATION CLICK */
+
+        item.addEventListener(
+            "click",
+            function(event) {
+
+                /* Ignore button clicks */
+
+                if (
+                    event.target.closest("button")
+                ) {
+                    return;
+                }
+
+
+                /* Mark as read */
+
+                if (!notification.read) {
+
+                    markNotificationAsRead(
+                        notification.id
+                    );
+
+                }
+
+
+                /* Navigate to related page */
+
+                handleNotificationClick(
+                    notification
+                );
+
+            }
+        );
+
+
+        /* NOTIFICATION HTML */
+
+        item.innerHTML = `
+
+            <div class="notification-icon">
+
+                <i class="bi bi-bell"></i>
+
+            </div>
+
+
+            <div class="notification-content">
+
+                <strong>
+                    ${notification.title}
+                </strong>
+
+                <p>
+                    ${notification.description}
+                </p>
+
+                <small>
+                    ${notification.date}
+                </small>
+
+            </div>
+
+
+            <div class="notification-actions">
+
+                ${
+                    !notification.read
                         ? `
                             <button
                                 type="button"
@@ -7186,30 +7248,32 @@ visibleNotifications.forEach(
                             </button>
                         `
                         : ""
-                    }
+                }
 
 
-                    <button
-                        type="button"
-                        class="btn btn-sm btn-link text-danger"
-                        onclick="deleteNotification(${notification.id})">
+                <button
+                    type="button"
+                    class="btn btn-sm btn-link text-danger"
+                    onclick="deleteNotification(${notification.id})">
 
-                        <i class="bi bi-trash"></i>
+                    <i class="bi bi-trash"></i>
 
-                    </button>
+                </button>
 
-                </div>
+            </div>
 
-            `;
-
-
-            list.appendChild(item);
-
-        }
-    );
+        `;
 
 
-    updateNotificationBadge();
+        list.appendChild(
+            item
+        );
+
+    }
+);
+
+
+updateNotificationBadge();
 
 }
 
