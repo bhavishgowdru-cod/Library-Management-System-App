@@ -13,7 +13,42 @@ const loginPassword =
 
 const loginError =
     document.getElementById("loginError");
+const togglePassword =
+    document.getElementById("togglePassword");
 
+
+/* =====================================================
+   SHOW / HIDE PASSWORD
+===================================================== */
+
+if (togglePassword) {
+
+    togglePassword.addEventListener(
+        "click",
+        function () {
+
+            const isPassword =
+                loginPassword.type === "password";
+
+            loginPassword.type =
+                isPassword
+                    ? "text"
+                    : "password";
+
+
+            const icon =
+                togglePassword.querySelector("i");
+
+
+            icon.className =
+                isPassword
+                    ? "bi bi-eye-slash"
+                    : "bi bi-eye";
+
+        }
+    );
+
+}
 
 /* =====================================================
    LOGIN

@@ -9,261 +9,291 @@
         name="viewport"
         content="width=device-width, initial-scale=1.0">
 
-    <title>Create Account</title>
-
+    <title>Create Account | LMS</title>
 
     <!-- Bootstrap -->
-
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
         rel="stylesheet">
 
-
-    <!-- Register CSS -->
-
+    <!-- Bootstrap Icons -->
     <link
         rel="stylesheet"
-        href="css/register.css">
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- SAME LOGIN STYLE -->
+    <link
+        rel="stylesheet"
+        href="css/login.css?v=10">
+
+    <!-- REGISTER OVERRIDES -->
+    <link
+        rel="stylesheet"
+        href="css/register.css?v=10">
 
 </head>
 
 <body>
 
+    <main class="login-page">
 
-    <div class="register-container">
+        <!-- LEFT SIDE - SAME AS LOGIN -->
 
-        <div class="register-card">
+        <section class="login-brand-section">
 
+            <div class="brand-decoration brand-circle-one"></div>
+            <div class="brand-decoration brand-circle-two"></div>
 
-            <!-- HEADING -->
+            <div class="brand-content">
 
-            <div class="register-title">
+                <div class="brand-logo">
+                    <i class="bi bi-book-half"></i>
+                </div>
 
-                <h3>
-                    Create Account
-                </h3>
+                <span class="brand-badge">
+                    LMS Portal
+                </span>
 
-                <p>
-                    Register to access the Library Management System
+                <h1>
+                    Library Management System
+                </h1>
+
+                <p class="brand-description">
+                    A simple and efficient platform to manage
+                    books, members, issues, returns, and library
+                    activities from one place.
                 </p>
+
+                <div class="brand-features">
+
+                    <div class="brand-feature">
+
+                        <span class="feature-icon">
+                            <i class="bi bi-journals"></i>
+                        </span>
+
+                        <div>
+                            <h5>Book Management</h5>
+                            <p>Easily organize and manage library books.</p>
+                        </div>
+
+                    </div>
+
+                    <div class="brand-feature">
+
+                        <span class="feature-icon">
+                            <i class="bi bi-people"></i>
+                        </span>
+
+                        <div>
+                            <h5>Member Management</h5>
+                            <p>Manage library members efficiently.</p>
+                        </div>
+
+                    </div>
+
+                    <div class="brand-feature">
+
+                        <span class="feature-icon">
+                            <i class="bi bi-arrow-left-right"></i>
+                        </span>
+
+                        <div>
+                            <h5>Issue & Return Tracking</h5>
+                            <p>Keep track of issued and returned books.</p>
+                        </div>
+
+                    </div>
+
+                </div>
 
             </div>
 
+        </section>
 
-            <!-- REGISTER FORM -->
 
-            <form id="registerForm">
+        <!-- RIGHT SIDE - SAME AS LOGIN -->
 
+        <section class="login-form-section">
 
-                <!-- FIRST NAME -->
+            <div class="login-wrapper register-wrapper">
 
-                <div class="mb-3">
+                <div class="login-header">
 
-                    <label
-                        for="firstName"
-                        class="form-label">
-
-                        First Name
-
-                    </label>
-
-                    <input
-                        type="text"
-                        id="firstName"
-                        class="form-control"
-                        placeholder="Enter first name"
-                        required>
-
-                </div>
-
-
-                <!-- MIDDLE NAME -->
-
-                <div class="mb-3">
-
-                    <label
-                        for="middleName"
-                        class="form-label">
-
-                        Middle Name
-
-                    </label>
-
-                    <input
-                        type="text"
-                        id="middleName"
-                        class="form-control"
-                        placeholder="Enter middle name">
-
-                </div>
-
-
-                <!-- LAST NAME -->
-
-                <div class="mb-3">
-
-                    <label
-                        for="lastName"
-                        class="form-label">
-
-                        Last Name
-
-                    </label>
-
-                    <input
-                        type="text"
-                        id="lastName"
-                        class="form-control"
-                        placeholder="Enter last name"
-                        required>
-
-                </div>
-
-
-                <!-- DOB -->
-
-                <div class="mb-3">
-
-                    <label
-                        for="dob"
-                        class="form-label">
-
-                        Date of Birth
-
-                    </label>
-
-                    <input
-                        type="date"
-                        id="dob"
-                        class="form-control"
-                        required>
-
-                </div>
-
-
-                <!-- EMAIL -->
-
-                <div class="mb-3">
-
-                    <label
-                        for="registerEmail"
-                        class="form-label">
-
-                        Email ID
-
-                    </label>
-
-                    <input
-                        type="email"
-                        id="registerEmail"
-                        class="form-control"
-                        placeholder="Enter email address"
-                        required>
-
-                </div>
-
-
-                <!-- PASSWORD -->
-
-                <div class="mb-3">
-
-                    <label
-                        for="registerPassword"
-                        class="form-label">
-
-                        Password
-
-                    </label>
-
-                    <input
-                        type="password"
-                        id="registerPassword"
-                        class="form-control"
-                        placeholder="Enter password"
-                        required>
-
-
-                    <small class="password-info">
-
-                        Password must contain at least 8 characters,
-                        uppercase, lowercase, number and special character.
-
-                    </small>
-
-                </div>
-
-
-                <!-- CONFIRM PASSWORD -->
-
-                <div class="mb-3">
-
-                    <label
-                        for="confirmPassword"
-                        class="form-label">
-
-                        Confirm Password
-
-                    </label>
-
-                    <input
-                        type="password"
-                        id="confirmPassword"
-                        class="form-control"
-                        placeholder="Re-enter password"
-                        required>
-
-                </div>
-
-
-                <!-- MESSAGE -->
-
-                <div
-                    id="registerMessage"
-                    class="mb-3">
-                </div>
-
-
-                <!-- CREATE ACCOUNT BUTTON -->
-
-                <button
-                    type="submit"
-                    class="btn btn-primary w-100">
-
-                    Create Account
-
-                </button>
-
-
-                <!-- LOGIN -->
-
-                <div class="text-center mt-3">
-
-                    <span>
-                        Already have an account?
+                    <span class="welcome-label">
+                        Create Account
                     </span>
 
-                    <a
-                        href="login.html"
-                        class="text-decoration-none">
+                    <h2>
+                        Register your account
+                    </h2>
 
-                        Login
-
-                    </a>
+                    <p>
+                        Enter your details to create your LMS account.
+                    </p>
 
                 </div>
 
 
-            </form>
+                <form id="registerForm">
 
-        </div>
+                    <div class="row g-3">
 
-    </div>
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                First Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="firstName"
+                                class="form-control"
+                                placeholder="First name"
+                                required>
+
+                        </div>
 
 
-    <!-- REGISTER JS -->
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Middle Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="middleName"
+                                class="form-control"
+                                placeholder="Middle name">
+
+                        </div>
+
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Last Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="lastName"
+                                class="form-control"
+                                placeholder="Last name"
+                                required>
+
+                        </div>
+
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Date of Birth
+                            </label>
+
+                            <input
+                                type="date"
+                                id="dob"
+                                class="form-control"
+                                required>
+
+                        </div>
+
+
+                        <div class="col-12">
+
+                            <label class="form-label">
+                                Email Address
+                            </label>
+
+                            <input
+                                type="email"
+                                id="registerEmail"
+                                class="form-control"
+                                placeholder="Enter your email"
+                                required>
+
+                        </div>
+
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Password
+                            </label>
+
+                            <input
+                                type="password"
+                                id="registerPassword"
+                                class="form-control"
+                                placeholder="Password"
+                                required>
+
+                        </div>
+
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Confirm Password
+                            </label>
+
+                            <input
+                                type="password"
+                                id="confirmPassword"
+                                class="form-control"
+                                placeholder="Confirm password"
+                                required>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="registerError"
+                        class="login-message">
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="login-btn mt-2">
+
+                        Create Account
+
+                        <i class="bi bi-arrow-right"></i>
+
+                    </button>
+
+
+                    <div class="register-section mt-3">
+
+                        <span>
+                            Already have an account?
+                        </span>
+
+                        <a
+                            href="login.html"
+                            class="register-link">
+
+                            Sign In
+
+                        </a>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </section>
+
+    </main>
+
 
     <script src="js/register.js"></script>
-
 
 </body>
 

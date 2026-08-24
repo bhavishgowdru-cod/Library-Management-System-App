@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
@@ -12,187 +11,334 @@
 
     <title>LMS Login</title>
 
-
     <!-- Bootstrap -->
-
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
         rel="stylesheet">
 
-
     <!-- Bootstrap Icons -->
-
     <link
         rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-
-    <!-- Auth CSS -->
-
+    <!-- Login CSS -->
     <link
         rel="stylesheet"
-        href="css/auth.css">
+        href="css/login.css?v=6">
 
 </head>
 
-
 <body>
 
+    <main class="login-page">
 
-<div class="auth-container">
+        <!-- LEFT BRAND SECTION -->
 
+        <section class="login-brand-section">
 
-    <div class="auth-card">
+            <div class="brand-decoration brand-circle-one"></div>
+            <div class="brand-decoration brand-circle-two"></div>
 
+            <div class="brand-content">
 
-        <!-- LOGO -->
+                <div class="brand-logo">
 
-        <div class="auth-logo">
+                    <i class="bi bi-journal-text"></i>
 
-            <i class="bi bi-book"></i>
+                </div>
 
-        </div>
-
-
-        <!-- TITLE -->
-
-        <div class="auth-title">
-
-            <h2>
-                Library Management System
-            </h2>
-
-            <p>
-                Sign in to continue
-            </p>
-
-        </div>
-
-
-        <!-- LOGIN FORM -->
-
-        <form id="loginForm">
-
-
-            <!-- EMAIL -->
-
-            <div class="mb-3">
-
-                <label
-                    for="loginEmail"
-                    class="form-label">
-
-                    Email Address
-
-                </label>
-
-
-                <input
-                    type="email"
-                    id="loginEmail"
-                    class="form-control"
-                    placeholder="Enter your email"
-                    required>
-
-            </div>
-
-
-            <!-- PASSWORD -->
-
-            <div class="mb-2">
-
-                <label
-                    for="loginPassword"
-                    class="form-label">
-
-                    Password
-
-                </label>
-
-
-                <input
-                    type="password"
-                    id="loginPassword"
-                    class="form-control"
-                    placeholder="Enter your password"
-                    required>
-
-            </div>
-
-
-            <!-- FORGOT PASSWORD -->
-
-            <div class="text-end mb-3">
-
-                <a
-                    href="forgot-password.html"
-                    class="auth-link">
-
-                    Forgot Password?
-
-                </a>
-
-            </div>
-
-
-            <!-- ERROR -->
-
-            <div
-                id="loginError"
-                class="auth-message text-danger">
-            </div>
-
-
-            <!-- LOGIN -->
-
-            <button
-                type="submit"
-                class="btn auth-btn w-100">
-
-                Login
-
-            </button>
-
-
-            <div class="auth-divider">
-
-                <span>
-                    New to LMS?
+                <span class="brand-badge">
+                    LMS Portal
                 </span>
 
+                <h1>
+                    Library Management System
+                </h1>
+
+                <p class="brand-description">
+                    A simple and efficient platform to manage
+                    books, members, issues, returns, and library
+                    activities from one place.
+                </p>
+
+                <div class="brand-features">
+
+                    <div class="brand-feature">
+
+                        <span class="feature-icon">
+                            <i class="bi bi-journals"></i>
+                        </span>
+
+                        <div>
+
+                            <h5>
+                                Book Management
+                            </h5>
+
+                            <p>
+                                Easily organize and manage library books.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="brand-feature">
+
+                        <span class="feature-icon">
+                            <i class="bi bi-people"></i>
+                        </span>
+
+                        <div>
+
+                            <h5>
+                                Member Management
+                            </h5>
+
+                            <p>
+                                Manage library members efficiently.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="brand-feature">
+
+                        <span class="feature-icon">
+                            <i class="bi bi-arrow-left-right"></i>
+                        </span>
+
+                        <div>
+
+                            <h5>
+                                Issue & Return Tracking
+                            </h5>
+
+                            <p>
+                                Keep track of issued and returned books.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
             </div>
 
+        </section>
 
-            <!-- REGISTER -->
 
-            <div class="text-center">
+        <!-- LOGIN SECTION -->
 
-                <span>
-                    Don't have an account?
-                </span>
+        <section class="login-form-section">
 
-                <a
-                    href="register.html"
-                    class="auth-link">
+            <div class="login-wrapper">
 
-                    Create Account
+                <!-- MOBILE LOGO -->
 
-                </a>
+                <div class="mobile-brand-logo">
+
+                    <i class="bi bi-book-half"></i>
+
+                </div>
+
+
+                <!-- HEADER -->
+
+                <div class="login-header">
+
+                    <span class="welcome-label">
+                        Welcome Back
+                    </span>
+
+                    <h2>
+                        Sign in to your account
+                    </h2>
+
+                    <p>
+                        Enter your registered email and password
+                        to access the Library Management System.
+                    </p>
+
+                </div>
+
+
+                <!-- LOGIN FORM -->
+
+                <form id="loginForm">
+
+                    <!-- EMAIL -->
+
+                    <div class="form-group">
+
+                        <label
+                            for="loginEmail"
+                            class="form-label">
+
+                            Email Address
+
+                        </label>
+
+                        <div class="input-group-custom">
+
+                            <span class="input-icon">
+
+                                <i class="bi bi-envelope"></i>
+
+                            </span>
+
+                            <input
+                                type="email"
+                                id="loginEmail"
+                                class="form-control"
+                                placeholder="Enter your email address"
+                                autocomplete="email"
+                                required>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- PASSWORD -->
+
+                    <div class="form-group">
+
+                        <label
+                            for="loginPassword"
+                            class="form-label">
+
+                            Password
+
+                        </label>
+
+                        <div class="input-group-custom">
+
+                            <span class="input-icon">
+
+                                <i class="bi bi-lock"></i>
+
+                            </span>
+
+                            <input
+                                type="password"
+                                id="loginPassword"
+                                class="form-control password-input"
+                                placeholder="Enter your password"
+                                autocomplete="current-password"
+                                required>
+
+                            <button
+                                type="button"
+                                class="password-toggle"
+                                id="togglePassword"
+                                aria-label="Show password">
+
+                                <i class="bi bi-eye"></i>
+
+                            </button>
+
+                        </div>
+
+
+                        <!-- FORGOT PASSWORD -->
+
+                        <div class="forgot-password-row">
+
+                            <a
+                                href="forgot-password.html"
+                                class="forgot-password-link">
+
+                                Forgot password?
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ERROR -->
+
+                    <div
+                        id="loginError"
+                        class="login-message">
+                    </div>
+
+
+                    <!-- LOGIN BUTTON -->
+
+                    <button
+                        type="submit"
+                        class="login-btn">
+
+                        <span>
+                            Sign In
+                        </span>
+
+                        <i class="bi bi-arrow-right"></i>
+
+                    </button>
+
+
+                    <!-- DIVIDER -->
+
+                    <div class="login-divider">
+
+                        <span>
+                            New to LMS?
+                        </span>
+
+                    </div>
+
+
+                    <!-- REGISTER -->
+
+                    <div class="register-section">
+
+                        <span>
+                            Don't have an account?
+                        </span>
+
+                        <a
+                            href="register.html"
+                            class="register-link">
+
+                            Create Account
+
+                        </a>
+
+                    </div>
+
+                </form>
+
+
+                <!-- FOOTER -->
+
+                <div class="login-footer">
+
+                    <i class="bi bi-shield-check"></i>
+
+                    <span>
+                        Secure Library Management Portal
+                    </span>
+
+                </div>
 
             </div>
 
+        </section>
 
-        </form>
-
-
-    </div>
+    </main>
 
 
-</div>
+    <!-- Login JavaScript -->
 
-
-<script src="js/login.js"></script>
-
+    <script src="js/login.js"></script>
 
 </body>
 
