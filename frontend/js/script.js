@@ -1,7 +1,6 @@
-/* LIBRARY MANAGEMENT SYSTEM
+/*
+LIBRARY MANAGEMENT SYSTEM
    COMMON JAVASCRIPT */
-
-
 const KEYS = {
     members: "libraryMembers",
     books: "libraryBooks",
@@ -9,7 +8,7 @@ const KEYS = {
     profile: "libraryProfile"
 };
 
-
+const API_BASE_URL = "http://127.0.0.1:8000/api";
 /* 
    COMMON STORAGE FUNCTIONS */
 
@@ -2266,37 +2265,89 @@ currentPage = 1;
 function initBooks() {
 
     const form =
-        document.getElementById(
-            "bookForm"
-        );
-
+        document.getElementById("bookForm");
 
     const editForm =
-        document.getElementById(
-            "editBookForm"
-        );
-
+        document.getElementById("editBookForm");
 
     const table =
-        document.getElementById(
-            "bookTableBody"
-        );
-
+        document.getElementById("bookTableBody");
 
     const summary =
-        document.getElementById(
-            "bookSummaryBody"
-        );
+        document.getElementById("bookSummaryBody");
 
+    console.log("INIT BOOKS STARTED");
+
+    console.log("FORM:", !!form);
+    console.log("TABLE:", !!table);
+    console.log("SUMMARY:", !!summary);
 
     if (!form || !table || !summary) {
         return;
     }
 
+    let books = [];
+    
+    async function loadBooksFromBackend() {
 
-    let books =
-        getData(KEYS.books);
+    try {
 
+        const response =
+            await fetch(
+                "http://127.0.0.1:8000/api/books/"
+            );
+
+        if (!response.ok) {
+            throw new Error(
+                "Backend returned status: " +
+                response.status
+            );
+        }
+
+        const data =
+            await response.json();
+
+        if (!data.success) {
+            throw new Error(
+                data.message ||
+                "Unable to load books"
+            );
+        }
+
+        books =
+            data.books.map(function(book) {
+
+                return {
+                    id: book.id,
+                    title: book.book_name,
+                    author: book.author_name,
+                    category: "",
+                    department: "",
+                    status: book.status
+                };
+
+            });
+
+        console.log(
+            "Books loaded from MySQL:",
+            books
+        );
+
+        display();
+
+        updateBookStatistics();
+
+        updateDepartmentSummary();
+
+    } catch (error) {
+
+        console.error(
+            "Error connecting frontend to backend:",
+            error
+        );
+
+    }
+}
 
     let bookPage = 1;
 
@@ -3523,13 +3574,8 @@ departmentPage = 1;
 
 
                 display();
-
-
                 updateBookStatistics();
-
-
                 updateDepartmentSummary();
-
 
                 updateDashboard();
 
@@ -3792,6 +3838,8 @@ departmentPage = 1;
 
 
             updateDepartmentSummary();
+            console.log("CALLING BACKEND");
+            loadBooksFromBackend();
 
         }
     );
@@ -3831,10 +3879,10 @@ departmentPage = 1;
     ===================================================== */
 
     display();
-
     updateBookStatistics();
-
     updateDepartmentSummary();
+    /*console.log("INIT BOOKS RUNNING");*/
+    loadBooksFromBackend();
 
 }
 
@@ -6355,6 +6403,8 @@ function checkCalendarAnnouncement() {
 document.addEventListener(
     "DOMContentLoaded",
     function() {
+
+        /*console.log("DOM LOADED");*/
 
         initMembers();
 
