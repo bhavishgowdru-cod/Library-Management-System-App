@@ -6679,6 +6679,27 @@ let notifications = JSON.parse(
 ) || [];
 
 /* =====================================================
+   NOTIFICATION SOUND
+===================================================== */
+
+function playNotificationSound() {
+
+    const sound =
+        new Audio("sound/notification.mp3");
+
+    sound.volume = 1.0;
+
+    sound.play().catch(function(error) {
+
+        console.log(
+            "Notification sound could not play:",
+            error
+        );
+
+    });
+}
+
+/* =====================================================
    ADD NOTIFICATION
 ===================================================== */
 
@@ -6796,6 +6817,8 @@ if (alreadyExists) {
         "notifications",
         JSON.stringify(notifications)
     );
+
+    playNotificationSound();
 
 
     // Update notification panel

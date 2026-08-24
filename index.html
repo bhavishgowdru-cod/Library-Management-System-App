@@ -27,6 +27,8 @@
     href="css/style.css">
 
 
+
+
 </head>
 
 <body>
@@ -349,320 +351,196 @@
 </div>
 
 
-    <!-- =================================================
-         ISSUED BOOKS TABLE
-    ================================================== -->
+<!-- =================================================
+     ISSUED BOOKS TABLE
+================================================== -->
 
-    <div class="card shadow-sm mb-4">
+<div class="card shadow-sm mb-4">
 
+    <div class="card-header bg-white">
 
-        <div class="card-header bg-white">
+        <div
+            class="d-flex
+                   justify-content-between
+                   align-items-center">
 
+            <div>
 
-            <div
-                class="d-flex
-                       justify-content-between
-                       align-items-center">
+                <h5 class="mb-1">
 
+                    <i
+                        class="bi bi-journal-arrow-up me-2">
+                    </i>
 
-                <div>
+                    Issued Books
 
-                    <h5 class="mb-1">
+                </h5>
 
-                        <i
-                            class="bi bi-journal-arrow-up me-2">
-                        </i>
-
-                        Issued Books
-
-                    </h5>
-
-
-                    <small
-                        class="text-muted">
-
-                         Books that have been issued 
-
-                    </small>
-
-                </div>
-
+                <small class="text-muted">
+                    Books that have been issued
+                </small>
 
             </div>
 
+        </div>
+
+    </div>
+
+
+    <div class="card-body">
+
+        <div class="table-responsive">
+
+            <table
+                class="table
+                       table-hover
+                       align-middle
+                       mb-0">
+
+                <thead>
+
+                    <tr>
+
+                        <th>SL.NO</th>
+                        <th>Book ID</th>
+                        <th>Book</th>
+                        <th>Member</th>
+                        <th>Issued Date</th>
+                        <th>Return Date</th>
+                        <th>Status</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="IssuedBookstable">
+
+                    <tr>
+
+                        <td
+                            colspan="7"
+                            class="text-center text-muted py-4">
+
+                            No issued books found.
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
 
         </div>
 
 
-        <div class="card-body">
+        <!-- ISSUED BOOKS PAGINATION -->
 
+        <div
+            id="issuePagination"
+            class="d-flex justify-content-end mt-3">
+        </div>
 
-            <div class="table-responsive">
+    </div>
 
-
-                <table
-                    class="table
-                           table-hover
-                           align-middle
-                           mb-0">
-
-
-                    <thead>
-
-                        <tr>
-
-                            <th>
-                                #
-                            </th>
-
-                            <th>
-                                Book ID
-                            </th>
-
-                            <th>
-                                Book
-                            </th>
-
-                            <th>
-                                Member
-                            </th>
-
-                            <th>
-                                Issued Date
-                            </th>
-
-                            <th>
-                                Return Date
-                            </th>
-
-                            <th>
-                                Status
-                            </th>
-
-                        </tr>
-
-                    </thead>
-
-
-                    <tbody id="IssuedBookstable">
-
-                        <tr>
-
-                            <td
-                                colspan="8"
-                                class="text-center text-muted py-4">
-
-                                No issued books found.
-
-                            </td>
-
-                        </tr>
-
-                    </tbody>
-
-
-                </table>
-
-
-            </div>
-
-
-    <div class="d-flex justify-content-end mt-3">
-    <nav>
-        <ul class="pagination mb-0">
-
-            <li class="page-item disabled">
-                <button class="page-link" type="button">
-                    Previous
-                </button>
-            </li>
-
-            <li class="page-item active">
-                <button class="page-link" type="button">
-                    1
-                </button>
-            </li>
-
-            <li class="page-item">
-                <button class="page-link" type="button">
-                    2
-                </button>
-            </li>
-
-            <li class="page-item">
-                <button class="page-link" type="button">
-                    3
-                </button>
-            </li>
-
-            <li class="page-item">
-                <button class="page-link" type="button">
-                    Next
-                </button>
-            </li>
-
-        </ul>
-    </nav>
 </div>
-    <!-- =================================================
-         RETURNED BOOKS TABLE
-    ================================================== -->
-
-    <div class="card shadow-sm mb-4">
 
 
-        <div class="card-header bg-white">
+<!-- =================================================
+     RETURNED BOOKS TABLE
+================================================== -->
 
+<div class="card shadow-sm mb-4">
 
-            <div
-                class="d-flex
-                       justify-content-between
-                       align-items-center">
+    <div class="card-header bg-white">
 
+        <div
+            class="d-flex
+                   justify-content-between
+                   align-items-center">
 
-                <div>
+            <div>
 
-                    <h5 class="mb-1">
+                <h5 class="mb-1">
 
-                        <i
-                            class="bi bi-journal-check me-2">
-                        </i>
+                    <i
+                        class="bi bi-journal-check me-2">
+                    </i>
 
-                        Returned Books
+                    Returned Books
 
-                    </h5>
+                </h5>
 
-
-                    <small
-                        class="text-muted">
-
-                        Books that have been returned
-
-                    </small>
-
-                </div>
-
+                <small class="text-muted">
+                    Books that have been returned
+                </small>
 
             </div>
 
+        </div>
+
+    </div>
+
+
+    <div class="card-body">
+
+        <div class="table-responsive">
+
+            <table
+                class="table
+                       table-hover
+                       align-middle
+                       mb-0">
+
+                <thead>
+
+                    <tr>
+
+                        <th>SL.NO</th>
+                        <th>Book ID</th>
+                        <th>Book</th>
+                        <th>Member</th>
+                        <th>Issued Date</th>
+                        <th>Returned Date</th>
+                        <th>Actual Return Date</th>
+                        <th>Status</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="returnedBooksTable">
+
+                    <tr>
+
+                        <td
+                            colspan="8"
+                            class="text-center text-muted py-4">
+
+                            No returned books found.
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
 
         </div>
 
 
-        <div class="card-body">
+        <!-- RETURNED BOOKS PAGINATION -->
 
+        <div
+            id="returnPagination"
+            class="d-flex justify-content-end mt-3">
+        </div>
 
-            <div class="table-responsive">
+    </div>
 
-
-                <table
-                    class="table
-                           table-hover
-                           align-middle
-                           mb-0">
-
-
-                    <thead>
-
-                        <tr>
-
-                            <th>
-                                #
-                            </th>
-
-                            <th>
-                                Book ID
-                            </th>
-
-                            <th>
-                                Book
-                            </th>
-
-                            <th>
-                                Member
-                            </th>
-
-                            <th>
-                                Issued Date
-                            </th>
-
-                            <th>
-                                Returned Date
-                            </th>
-
-                            <th>
-                                Actual ReturnDate
-                            </th>
-
-                            <th>
-                                Status
-                            </th>
-
-                        </tr>
-
-                    </thead>
-
-
-                    <tbody id="returnedBooksTable">
-
-                        <tr>
-
-                            <td
-                                colspan="8"
-                                class="text-center text-muted py-4">
-
-                                No returned books found.
-
-                            </td>
-
-                        </tr>
-
-                    </tbody>
-
-
-                </table>
-
-
-            </div>
-
-
-           <!-- RETURNED BOOKS PAGINATION -->
-    <div class="d-flex justify-content-end mt-3">
-    <nav>
-        <ul class="pagination mb-0">
-
-            <li class="page-item disabled">
-                <button class="page-link" type="button">
-                    Previous
-                </button>
-            </li>
-
-            <li class="page-item active">
-                <button class="page-link" type="button">
-                    1
-                </button>
-            </li>
-
-            <li class="page-item">
-                <button class="page-link" type="button">
-                    2
-                </button>
-            </li>
-
-            <li class="page-item">
-                <button class="page-link" type="button">
-                    3
-                </button>
-            </li>
-
-            <li class="page-item">
-                <button class="page-link" type="button">
-                    Next
-                </button>
-            </li>
-
-        </ul>
-    </nav>
 </div>
 
 <!-- =====================================================
