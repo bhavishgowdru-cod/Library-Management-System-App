@@ -2287,7 +2287,6 @@ function initBooks() {
     }
 
     let books = [];
-    
     async function loadBooksFromBackend() {
 
     try {
@@ -2321,9 +2320,10 @@ function initBooks() {
                     id: book.id,
                     title: book.book_name,
                     author: book.author_name,
-                    category: "",
-                    department: "",
-                    status: book.status
+                    category: book.category,
+                    department: book.department,
+                    status: book.status,
+                    available_copies: book.available_copies
                 };
 
             });
@@ -4864,163 +4864,136 @@ function initIssueReturn() {
     ===================================================== */
 
     form.addEventListener(
-        "submit",
-        function(e) {
+    "submit",
+    async function(e) {
 
-            e.preventDefault();
+        e.preventDefault();
 
+        /*books = getData(KEYS.books);*/
+        members = getData(KEYS.members);
+        issues = getData(KEYS.issues);
 
-            books =
-                getData(KEYS.books);
+        const selectedBookId = bookSelect.value;
+        const selectedMemberId = memberSelect.value;
 
-            members =
-                getData(KEYS.members);
+        const book = books.find(
+            function(b) {
+                return String(b.id) === String(selectedBookId);
+            }
+        );
 
-            issues =
-                getData(KEYS.issues);
+        const member = members.find(
+            function(m) {
+                return String(m.id) === String(selectedMemberId);
+            }
+        );
 
+        if (
+            !book ||
+            !member ||
+            !issueDate.value ||
+            !returnDate.value
+        ) {
 
-            const selectedBookId =
-                bookSelect.value;
+            alert(
+                "Please fill all fields."
+            );
 
+            return;
+        }
 
-            const selectedMemberId =
-                memberSelect.value;
+        if (
+            returnDate.value <
+            issueDate.value
+        ) {
 
+            alert(
+                "Return date cannot be before issue date."
+            );
 
-            const book =
-                books.find(
-                    function(b) {
+            return;
+        }
 
-                        return b.id ===
-                            selectedBookId;
+        if (
+            book.status !==
+            "Available"
+        ) {
 
+            alert(
+                "This book is already issued."
+            );
+
+            return;
+        }
+
+        const alreadyIssued =
+            issues.some(
+                function(issue) {
+
+                    return (
+                        String(issue.bookId) ===
+                            String(book.id) &&
+                        issue.status ===
+                            "Issued"
+                    );
+
+                }
+            );
+
+        if (alreadyIssued) {
+
+            alert(
+                "This book already has an active issue record."
+            );
+
+            return;
+        }
+
+        try {
+
+            const response =
+                await fetch(
+                    "http://127.0.0.1:8000/api/issues/",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+
+                            book_id:
+                                book.id,
+
+                            member_id:
+                                member.id,
+
+                            issue_date:
+                                issueDate.value,
+
+                            return_date:
+                                returnDate.value
+
+                        })
                     }
                 );
 
+            const data =
+                await response.json();
 
-            const member =
-                members.find(
-                    function(m) {
+            if (!response.ok || !data.success) {
 
-                        return m.id ===
-                            selectedMemberId;
-
-                    }
+                throw new Error(
+                    data.message ||
+                    "Unable to issue book"
                 );
 
-
-            if (
-                !book ||
-                !member ||
-                !issueDate.value ||
-                !returnDate.value
-            ) {
-
-                alert(
-                    "Please fill all fields."
-                );
-
-                return;
             }
-
-
-            if (
-                returnDate.value <
-                issueDate.value
-            ) {
-
-                alert(
-                    "Return date cannot be before issue date."
-                );
-
-                return;
-            }
-
-
-            if (
-                book.status !==
-                "Available"
-            ) {
-
-                alert(
-                    "This book is already issued."
-                );
-
-                return;
-            }
-
-
-            const alreadyIssued =
-                issues.some(
-                    function(issue) {
-
-                        return (
-                            issue.bookId ===
-                                book.id &&
-                            issue.status ===
-                                "Issued"
-                        );
-
-                    }
-                );
-
-
-            if (alreadyIssued) {
-
-                alert(
-                    "This book already has an active issue record."
-                );
-
-                return;
-            }
-
-
-            const issue = {
-
-                id:
-                    "I" +
-                    Date.now(),
-
-                bookId:
-                    book.id,
-
-                bookName:
-                    book.title,
-
-                memberId:
-                    member.id,
-
-                memberName:
-                    member.name,
-
-                issueDate:
-                    issueDate.value,
-
-                returnDate:
-                    returnDate.value,
-
-                actualReturnDate:
-                    null,
-
-                status:
-                    "Issued"
-
-            };
-
-
-            issues.push(issue);
-
 
             book.status =
                 "Issued";
-
-
-            localStorage.setItem(
-                KEYS.issues,
-                JSON.stringify(issues)
-            );
-
 
             localStorage.setItem(
                 KEYS.books,
@@ -5028,11 +5001,10 @@ function initIssueReturn() {
             );
 
             addNotification(
-    "Book Successfully Issued",
-    `The book "${book.title}" has been issued to ${member.name}.`,
-    "issued"
-);
-
+                "Book Successfully Issued",
+                `The book "${book.title}" has been issued to ${member.name}.`,
+                "issued"
+            );
 
             window.dispatchEvent(
                 new Event(
@@ -5040,9 +5012,7 @@ function initIssueReturn() {
                 )
             );
 
-
             issuedCurrentPage = 1;
-
 
             loadOptions();
 
@@ -5052,9 +5022,7 @@ function initIssueReturn() {
 
             updateDashboard();
 
-
             form.reset();
-
 
             issueDate.value =
                 today();
@@ -5068,13 +5036,26 @@ function initIssueReturn() {
             returnDate.min =
                 today();
 
-
             alert(
                 "Book issued successfully!"
             );
 
+        } catch (error) {
+
+            console.error(
+                "Error issuing book:",
+                error
+            );
+
+            alert(
+                error.message ||
+                "Unable to issue book."
+            );
+
         }
-    );
+
+    }
+);
 
 
 /* =====================================================
@@ -5082,7 +5063,7 @@ function initIssueReturn() {
 ===================================================== */
 
 window.returnBook =
-    function(issueId) {
+    async function(issueId) {
 
         issues =
             getData(KEYS.issues);
@@ -5090,126 +5071,129 @@ window.returnBook =
         books =
             getData(KEYS.books);
 
-
         const issue =
             issues.find(
                 function(item) {
-
-                    return item.id === issueId;
-
+                    return String(item.id) === String(issueId);
                 }
             );
-
 
         if (!issue) {
             return;
         }
-
 
         if (
             !confirm(
                 `Return "${issue.bookName}" borrowed by ${issue.memberName}?`
             )
         ) {
-
             return;
         }
 
+        try {
 
-        /* CHANGE ISSUE STATUS */
+            const response =
+                await fetch(
+                    `http://127.0.0.1:8000/api/issues/${issueId}/`,
+                    {
+                        method: "PUT",
 
-        issue.status =
-            "Returned";
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
 
+                        body: JSON.stringify({
+                            actual_return_date:
+                                today()
+                        })
+                    }
+                );
 
-        /* SAVE ACTUAL RETURN DATE */
+            const data =
+                await response.json();
 
-        issue.actualReturnDate =
-            today();
+            if (!response.ok || !data.success) {
 
+                throw new Error(
+                    data.message ||
+                    "Unable to return book"
+                );
 
-        /* FIND BOOK */
+            }
 
-        const book =
-            books.find(
-                function(item) {
+            issue.status =
+                "Returned";
 
-                    return item.id ===
-                        issue.bookId;
+            issue.actualReturnDate =
+                today();
 
-                }
+            const book =
+                books.find(
+                    function(item) {
+                        return String(item.id) ===
+                            String(issue.bookId);
+                    }
+                );
+
+            if (book) {
+
+                book.status =
+                    "Available";
+            }
+
+            localStorage.setItem(
+                KEYS.issues,
+                JSON.stringify(issues)
             );
 
+            localStorage.setItem(
+                KEYS.books,
+                JSON.stringify(books)
+            );
 
-        /* MAKE BOOK AVAILABLE */
+            notifyBookReturned(
+                issue.bookName,
+                issue.memberName,
+                issue.id
+            );
 
-        if (book) {
+            window.dispatchEvent(
+                new Event(
+                    "libraryDataChanged"
+                )
+            );
 
-            book.status =
-                "Available";
+            issuedCurrentPage = 1;
 
+            returnCurrentPage = 1;
+
+            loadOptions();
+
+            displayIssuedTable();
+
+            displayReturnTable();
+
+            updateDashboard();
+
+            alert(
+                "Book returned successfully!"
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Error returning book:",
+                error
+            );
+
+            alert(
+                error.message ||
+                "Unable to return book."
+            );
         }
-
-
-        /* SAVE ISSUES */
-
-        localStorage.setItem(
-            KEYS.issues,
-            JSON.stringify(issues)
-        );
-
-
-        /* SAVE BOOKS */
-
-        localStorage.setItem(
-            KEYS.books,
-            JSON.stringify(books)
-        );
-
-
-        /* =================================================
-           RETURNED BOOK NOTIFICATION
-        ================================================= */
-
-        notifyBookReturned(
-            issue.bookName,
-            issue.memberName,
-            issue.id
-        );
-
-
-        /* INFORM OTHER LMS SECTIONS */
-
-        window.dispatchEvent(
-            new Event(
-                "libraryDataChanged"
-            )
-        );
-
-
-        /* RESET PAGINATION */
-
-        issuedCurrentPage = 1;
-
-        returnCurrentPage = 1;
-
-
-        /* REFRESH PAGE */
-
-        loadOptions();
-
-        displayIssuedTable();
-
-        displayReturnTable();
-
-        updateDashboard();
-
-
-        alert(
-            "Book returned successfully!"
-        );
-
     };
+
     /* =====================================================
        INITIAL LOAD
     ===================================================== */
