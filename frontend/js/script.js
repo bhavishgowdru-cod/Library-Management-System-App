@@ -4016,56 +4016,111 @@ function initIssueReturn() {
        LOAD BOOKS AND MEMBERS
     ===================================================== */
 
-    function loadOptions() {
+   // =====================================================
+// LOAD BOOKS AND MEMBERS FROM DJANGO API
+// =====================================================
+
+async function loadOptions() {
+
+    try {
+
+        // ===============================
+        // LOAD BOOKS FROM MYSQL
+        // ===============================
+
+        const booksResponse = await fetch(
+            "http://127.0.0.1:8000/api/books/"
+        );
+
+        const booksData =
+            await booksResponse.json();
+
+        if (!booksResponse.ok || !booksData.success) {
+
+            throw new Error(
+                booksData.message ||
+                "Unable to load books"
+            );
+
+        }
 
         books =
-            getData(KEYS.books);
+            booksData.books;
+
+
+        // ===============================
+        // LOAD MEMBERS FROM MYSQL
+        // ===============================
+
+        const membersResponse = await fetch(
+            "http://127.0.0.1:8000/api/members/"
+        );
+
+        const membersData =
+            await membersResponse.json();
+
+        if (!membersResponse.ok || !membersData.success) {
+
+            throw new Error(
+                membersData.message ||
+                "Unable to load members"
+            );
+
+        }
 
         members =
-            getData(KEYS.members);
+            membersData.members;
 
 
-        /* BOOKS */
+        // ===============================
+        // BOOK DROPDOWN
+        // ===============================
 
-        bookSelect.innerHTML =
-            `
+        bookSelect.innerHTML = `
             <option value="">
                 Select Book
             </option>
-            `;
+        `;
 
 
         books
             .filter(function(book) {
 
-                return book.status ===
-                    "Available";
+                return Number(
+                    book.available_copies
+                ) > 0;
 
             })
             .forEach(function(book) {
 
-                bookSelect.innerHTML +=
-                    `
+                bookSelect.innerHTML += `
                     <option value="${escapeHTML(book.id)}">
 
-                        ${escapeHTML(book.title)}
+                        ${escapeHTML(
+                            book.book_name
+                        )}
+
                         -
-                        ${escapeHTML(book.author)}
+
+                        ${escapeHTML(
+                            book.author_name
+                        )}
 
                     </option>
-                    `;
+                `;
 
             });
 
 
-        /* MEMBERS */
+        // ===============================
+        // MEMBER DROPDOWN
+        // ===============================
 
-        memberSelect.innerHTML =
-            `
+        memberSelect.innerHTML = `
             <option value="">
                 Select Member
             </option>
-            `;
+        `;
 
 
         members
@@ -4077,19 +4132,42 @@ function initIssueReturn() {
             })
             .forEach(function(member) {
 
-                memberSelect.innerHTML +=
-                    `
-                    <option value="${escapeHTML(member.id)}">
+                memberSelect.innerHTML += `
+                    <option value="${escapeHTML(
+                        member.member_id
+                    )}">
 
-                        ${escapeHTML(member.name)}
+                        ${escapeHTML(
+                            member.name
+                        )}
+
                         -
-                        ${escapeHTML(member.id)}
+
+                        ${escapeHTML(
+                            member.member_id
+                        )}
 
                     </option>
-                    `;
+                `;
 
             });
+
+
+    } catch (error) {
+
+        console.error(
+            "Error loading books/members:",
+            error
+        );
+
+        alert(
+            error.message ||
+            "Unable to load books and members."
+        );
+
     }
+
+}
 
 
     /* =====================================================
