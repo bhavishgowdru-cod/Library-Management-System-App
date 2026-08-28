@@ -178,164 +178,243 @@ let returnPage = 1;
 
 const dashboardRowsPerPage = 5;
 
+async function updateDashboard() {
 
-function updateDashboard() {
+    try {
 
-    const books =
-        getData(KEYS.books);
+        // GET DATA FROM API
 
-    const members =
-        getData(KEYS.members);
-
-    const issues =
-        getData(KEYS.issues);
-
-
-    /*  
-       BOOK COUNTS
-    */
-
-    const totalBooks =
-        books.length;
-
-
-    const availableBooks =
-        books.filter(function(book) {
-
-            return book.status === "Available";
-
-        }).length;
-
-
-    const issuedBooks =
-        books.filter(function(book) {
-
-            return book.status === "Issued";
-
-        }).length;
-
-
-    /*
-       MEMBER COUNTS
-    */
-
-    const totalMembers =
-        members.length;
-
-
-    const activeMembers =
-        members.filter(function(member) {
-
-            return member.status === "Active";
-
-        }).length;
-
-
-    /*
-       ISSUE COUNTS
-    */
-
-    const issuedRecords =
-        issues.filter(function(issue) {
-
-            return issue.status === "Issued";
-
-        });
-
-
-    const returnedRecords =
-        issues.filter(function(issue) {
-
-            return issue.status === "Returned";
-
-        });
-
-
-    /*
-       OVERDUE BOOKS
-    */
-
-    const overdueBooks =
-        issuedRecords.filter(function(issue) {
-
-            return (
-                issue.returnDate &&
-                issue.returnDate < today()
+        const booksResponse =
+            await fetch(
+                "http://127.0.0.1:8000/api/books/"
             );
 
-        }).length;
+        const membersResponse =
+            await fetch(
+                "http://127.0.0.1:8000/api/members/"
+            );
+
+        const issuesResponse =
+            await fetch(
+                "http://127.0.0.1:8000/api/issues/"
+            );
 
 
-    /*
-       UPDATE DASHBOARD CARDS
-    */
+        if (
+            !booksResponse.ok ||
+            !membersResponse.ok ||
+            !issuesResponse.ok
+        ) {
 
-    const values = {
-
-        totalBooks:
-            totalBooks,
-
-        availableBooks:
-            availableBooks,
-
-        booksIssued:
-            issuedBooks,
-
-        totalMembers:
-            totalMembers,
-
-        activeMembers:
-            activeMembers,
-
-        overdueBooks:
-            overdueBooks
-
-    };
-
-
-    Object.entries(values).forEach(
-        function([id, value]) {
-
-            const element =
-                document.getElementById(id);
-
-            if (element) {
-
-                element.textContent =
-                    value;
-
-            }
+            throw new Error(
+                "Unable to load dashboard data."
+            );
 
         }
-    );
 
 
-    /*
-       UPDATE DASHBOARD TABLES
-    */
+        const booksData =
+            await booksResponse.json();
 
-    displayIssuedBooks(
-        issuedRecords
-    );
+        const membersData =
+            await membersResponse.json();
 
-
-    displayReturnedBooks(
-        returnedRecords
-    );
+        const issuesData =
+            await issuesResponse.json();
 
 
-    /*
-       UPDATE PIE CHART
-    */
+        // GET ARRAYS
 
-    createLibraryPieChart(
-        totalBooks,
-        issuedBooks,
-        totalMembers,
-        overdueBooks,
-        activeMembers,
-        availableBooks
-    );
+        const books =
+            booksData.books ||
+            booksData.data ||
+            booksData;
+
+        const members =
+            membersData.members ||
+            membersData.data ||
+            membersData;
+
+        const issues =
+            issuesData.issues ||
+            issuesData.data ||
+            issuesData;
+
+
+        // BOOK COUNTS
+
+        const totalBooks =
+            books.length;
+
+
+        // AVAILABLE COPIES
+
+        const availableBooks =
+            books.reduce(
+                function(total, book) {
+
+                    return total +
+                        Number(
+                            book.available_copies || 0
+                        );
+
+                },
+                0
+            );
+
+
+        // ISSUE COUNTS
+
+        const issuedRecords =
+            issues.filter(
+                function(issue) {
+
+                    return issue.status ===
+                        "Issued";
+
+                }
+            );
+
+
+        const issuedBooks =
+            issuedRecords.length;
+
+
+        // MEMBER COUNTS
+
+        const totalMembers =
+            members.length;
+
+
+        const activeMembers =
+            members.filter(
+                function(member) {
+
+                    return member.status ===
+                        "Active";
+
+                }
+            ).length;
+
+
+        // RETURNED RECORDS
+
+        const returnedRecords =
+            issues.filter(
+                function(issue) {
+
+                    return issue.status ===
+                        "Returned";
+
+                }
+            );
+
+
+        // OVERDUE BOOKS
+
+        const overdueBooks =
+            issuedRecords.filter(
+                function(issue) {
+
+                    return (
+                        issue.returnDate &&
+                        issue.returnDate <
+                            today()
+                    );
+
+                }
+            ).length;
+
+
+        // UPDATE DASHBOARD CARDS
+
+        const values = {
+
+            totalBooks:
+                totalBooks,
+
+            availableBooks:
+                availableBooks,
+
+            booksIssued:
+                issuedBooks,
+
+            totalMembers:
+                totalMembers,
+
+            activeMembers:
+                activeMembers,
+
+            overdueBooks:
+                overdueBooks
+
+        };
+
+
+        Object.entries(values).forEach(
+            function([id, value]) {
+
+                const element =
+                    document.getElementById(id);
+
+                if (element) {
+
+                    element.textContent =
+                        value;
+
+                }
+
+            }
+        );
+
+
+        // UPDATE DASHBOARD TABLES
+
+        displayIssuedBooks(
+            issuedRecords
+        );
+
+
+        displayReturnedBooks(
+            returnedRecords
+        );
+
+
+        // UPDATE PIE CHART
+
+        createLibraryPieChart(
+            totalBooks,
+            issuedBooks,
+            totalMembers,
+            overdueBooks,
+            activeMembers,
+            availableBooks
+        );
+
+
+        console.log(
+            "Dashboard updated:",
+            {
+                totalBooks:
+                    totalBooks,
+
+                availableBooks:
+                    availableBooks,
+
+                issuedBooks:
+                    issuedBooks
+            }
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Error loading dashboard:",
+            error
+        );
+
+    }
 
 }
 
@@ -2841,16 +2920,16 @@ departmentPage = 1;
             updateDepartmentSummary();
 
 
-            /* =============================================
+            /* 
                REFRESH DASHBOARD
-            ============================================= */
+            */
 
             updateDashboard();
 
 
-            /* =============================================
+            /* 
                CLEAR FORM
-            ============================================= */
+            */
 
             form.reset();
 
@@ -2895,33 +2974,65 @@ departmentPage = 1;
        BOOK STATISTICS
     ===================================================== */
 
-    function updateBookStatistics() {
+    async function updateBookStatistics() {
 
+    try {
+
+        // TOTAL BOOK RECORDS
         const total =
             books.length;
 
 
+        // TOTAL AVAILABLE COPIES
         const available =
-            books.filter(
-                function(book) {
+            books.reduce(
+                function(total, book) {
 
-                    return book.status ===
-                        "Available";
+                    return total +
+                        Number(book.available_copies || 0);
 
-                }
-            ).length;
+                },
+                0
+            );
 
 
+        // GET ISSUED RECORDS FROM BACKEND
+        const response =
+            await fetch(
+                "http://127.0.0.1:8000/api/issues/"
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Unable to load issued books"
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        const issues =
+            data.issues || [];
+
+
+        // COUNT CURRENTLY ISSUED BOOKS
         const issued =
-            books.filter(
-                function(book) {
+            issues.filter(
+                function(issue) {
 
-                    return book.status ===
+                    return issue.status ===
                         "Issued";
 
                 }
             ).length;
 
+
+        // GET HTML ELEMENTS
 
         const totalElement =
             document.getElementById(
@@ -2941,12 +3052,16 @@ departmentPage = 1;
             );
 
 
+        // UPDATE TOTAL
+
         if (totalElement) {
 
             totalElement.textContent =
                 total;
         }
 
+
+        // UPDATE AVAILABLE COPIES
 
         if (availableElement) {
 
@@ -2955,39 +3070,101 @@ departmentPage = 1;
         }
 
 
+        // UPDATE ISSUED COUNT
+
         if (issuedElement) {
 
             issuedElement.textContent =
                 issued;
         }
+
+
+        console.log(
+            "Book Statistics:",
+            {
+                totalBooks: total,
+                availableCopies: available,
+                issuedBooks: issued
+            }
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Error updating book statistics:",
+            error
+        );
+
     }
+}
 
 
     /* =====================================================
        DEPARTMENT SUMMARY WITH PAGINATION
     ===================================================== */
 
-    function updateDepartmentSummary() {
+    async function updateDepartmentSummary() {
 
-        summary.innerHTML = "";
+    summary.innerHTML = "";
 
 
-        if (!books.length) {
+    if (!books.length) {
 
-            summary.innerHTML =
-                emptyRow(
-                    4,
-                    "No department data available."
-                );
+        summary.innerHTML =
+            emptyRow(
+                4,
+                "No department data available."
+            );
 
-            updateDepartmentPagination(0);
+        updateDepartmentPagination(0);
 
-            return;
+        return;
+    }
+
+
+    try {
+
+        /*
+           GET ISSUE DATA FROM BACKEND
+        */
+
+        const response =
+            await fetch(
+                "http://127.0.0.1:8000/api/issues/"
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Unable to load issue data"
+            );
+
         }
 
 
+        const issuesData =
+            await response.json();
+
+
+        const issues =
+            issuesData.issues ||
+            issuesData.data ||
+            issuesData;
+
+
+        /*
+           DEPARTMENT DATA
+        */
+
         const departments = {};
 
+
+        /*
+           CREATE DEPARTMENT LIST
+           FROM BOOK DATA
+        */
 
         books.forEach(
             function(book) {
@@ -3021,31 +3198,94 @@ departmentPage = 1;
                     department
                 ].total++;
 
+            }
+        );
+
+
+        /*
+           COUNT ISSUED BOOKS
+           USING ISSUE RECORDS
+        */
+
+        issues.forEach(
+            function(issue) {
 
                 if (
-                    book.status ===
+                    issue.status !==
                     "Issued"
+                ) {
+
+                    return;
+                }
+
+
+                const issuedBook =
+                    books.find(
+                        function(book) {
+
+                            return String(
+                                book.id
+                            ) === String(
+                                issue.bookId
+                            );
+
+                        }
+                    );
+
+
+                if (!issuedBook) {
+
+                    return;
+                }
+
+
+                const department =
+                    issuedBook.department ||
+                    "General";
+
+
+                if (
+                    departments[
+                        department
+                    ]
                 ) {
 
                     departments[
                         department
                     ].issued++;
-                }
 
-
-                if (
-                    book.status ===
-                    "Available"
-                ) {
-
-                    departments[
-                        department
-                    ].available++;
                 }
 
             }
         );
 
+
+        /*
+           CALCULATE AVAILABLE BOOKS
+        */
+
+        Object.keys(
+            departments
+        ).forEach(
+            function(department) {
+
+                departments[
+                    department
+                ].available =
+                    departments[
+                        department
+                    ].total -
+                    departments[
+                        department
+                    ].issued;
+
+            }
+        );
+
+
+        /*
+           SORT DEPARTMENTS
+        */
 
         const departmentList =
             Object.keys(
@@ -3081,6 +3321,10 @@ departmentPage = 1;
                 start + departmentsPerPage
             );
 
+
+        /*
+           DISPLAY DEPARTMENT ROWS
+        */
 
         pageDepartments.forEach(
             function(department) {
@@ -3138,6 +3382,7 @@ departmentPage = 1;
 
                             title.textContent =
                                 `${department} Books (${departmentBooks.length})`;
+
                         }
 
 
@@ -3162,6 +3407,7 @@ departmentPage = 1;
                                     "smooth"
 
                             });
+
                         }
 
                     }
@@ -3185,15 +3431,19 @@ departmentPage = 1;
                     </td>
 
                     <td>
+
                         <span class="badge bg-danger">
                             ${data.issued}
                         </span>
+
                     </td>
 
                     <td>
+
                         <span class="badge bg-success">
                             ${data.available}
                         </span>
+
                     </td>
 
                 `;
@@ -3210,7 +3460,18 @@ departmentPage = 1;
         updateDepartmentPagination(
             departmentList.length
         );
+
+
+    } catch (error) {
+
+        console.error(
+            "Error loading department summary:",
+            error
+        );
+
     }
+
+}
 
 
     /* =====================================================
@@ -4011,16 +4272,7 @@ function initIssueReturn() {
     returnDate.min =
         today();
 
-
-    /* =====================================================
-       LOAD BOOKS AND MEMBERS
-    ===================================================== */
-
-   // =====================================================
-// LOAD BOOKS AND MEMBERS FROM DJANGO API
-// =====================================================
-
-async function loadOptions() {
+        async function loadOptions() {
 
     try {
 
@@ -4028,14 +4280,20 @@ async function loadOptions() {
         // LOAD BOOKS FROM MYSQL
         // ===============================
 
-        const booksResponse = await fetch(
-            "http://127.0.0.1:8000/api/books/"
-        );
+        const booksResponse =
+            await fetch(
+                "http://127.0.0.1:8000/api/books/"
+            );
+
 
         const booksData =
             await booksResponse.json();
 
-        if (!booksResponse.ok || !booksData.success) {
+
+        if (
+            !booksResponse.ok ||
+            !booksData.success
+        ) {
 
             throw new Error(
                 booksData.message ||
@@ -4044,22 +4302,29 @@ async function loadOptions() {
 
         }
 
+
         books =
-            booksData.books;
+            booksData.books || [];
 
 
         // ===============================
         // LOAD MEMBERS FROM MYSQL
         // ===============================
 
-        const membersResponse = await fetch(
-            "http://127.0.0.1:8000/api/members/"
-        );
+        const membersResponse =
+            await fetch(
+                "http://127.0.0.1:8000/api/members/"
+            );
+
 
         const membersData =
             await membersResponse.json();
 
-        if (!membersResponse.ok || !membersData.success) {
+
+        if (
+            !membersResponse.ok ||
+            !membersData.success
+        ) {
 
             throw new Error(
                 membersData.message ||
@@ -4068,8 +4333,40 @@ async function loadOptions() {
 
         }
 
+
         members =
-            membersData.members;
+            membersData.members || [];
+
+
+        // ===============================
+        // LOAD ISSUES FROM MYSQL
+        // ===============================
+
+        const issuesResponse =
+            await fetch(
+                "http://127.0.0.1:8000/api/issues/"
+            );
+
+
+        const issuesData =
+            await issuesResponse.json();
+
+
+        if (
+            !issuesResponse.ok ||
+            !issuesData.success
+        ) {
+
+            throw new Error(
+                issuesData.message ||
+                "Unable to load issues"
+            );
+
+        }
+
+
+        issues =
+            issuesData.issues || [];
 
 
         // ===============================
@@ -4156,13 +4453,14 @@ async function loadOptions() {
     } catch (error) {
 
         console.error(
-            "Error loading books/members:",
+            "Error loading books, members and issues:",
             error
         );
 
+
         alert(
             error.message ||
-            "Unable to load books and members."
+            "Unable to load books, members and issues."
         );
 
     }
@@ -4170,220 +4468,279 @@ async function loadOptions() {
 }
 
 
-    /* =====================================================
-       GET ISSUED RECORDS
-    ===================================================== */
+/* =====================================================
+   GET ISSUED RECORDS
+===================================================== */
 
-    function getIssuedRecords() {
+async function getIssuedRecords() {
+
+    try {
+
+        const response =
+            await fetch(
+                "http://127.0.0.1:8000/api/issues/"
+            );
+
+        const data =
+            await response.json();
+
+        if (!response.ok || !data.success) {
+
+            throw new Error(
+                data.message ||
+                "Unable to load issued books"
+            );
+        }
 
         issues =
-            getData(KEYS.issues);
+            data.issues || [];
 
         return issues.filter(
             function(issue) {
 
-                return issue.status ===
-                    "Issued";
+                return issue.status === "Issued";
 
             }
         );
+
+    } catch (error) {
+
+        console.error(
+            "Error loading issued books:",
+            error
+        );
+
+        return [];
+
     }
+}
 
 
-    /* =====================================================
-       GET RETURNED RECORDS
-    ===================================================== */
+/* =====================================================
+   GET RETURNED RECORDS
+===================================================== */
 
-    function getReturnedRecords() {
+async function getReturnedRecords() {
+
+    try {
+
+        const response =
+            await fetch(
+                "http://127.0.0.1:8000/api/issues/"
+            );
+
+        const data =
+            await response.json();
+
+        if (!response.ok || !data.success) {
+
+            throw new Error(
+                data.message ||
+                "Unable to load returned books"
+            );
+        }
 
         issues =
-            getData(KEYS.issues);
+            data.issues || [];
 
         return issues.filter(
             function(issue) {
 
-                return issue.status ===
-                    "Returned";
+                return issue.status === "Returned";
 
             }
         );
+
+    } catch (error) {
+
+        console.error(
+            "Error loading returned books:",
+            error
+        );
+
+        return [];
+
+    }
+}
+
+
+/* =====================================================
+   DISPLAY ISSUED TABLE
+===================================================== */
+
+async function displayIssuedTable() {
+
+    const issuedList =
+        await getIssuedRecords();
+
+
+    const totalRows =
+        issuedList.length;
+
+
+    const totalPages =
+        Math.ceil(
+            totalRows /
+            rowsPerPage
+        );
+
+
+    /* Correct page if records are deleted/returned */
+
+    if (
+        issuedCurrentPage >
+            totalPages &&
+        totalPages > 0
+    ) {
+
+        issuedCurrentPage =
+            totalPages;
+
     }
 
 
-    /* =====================================================
-       DISPLAY ISSUED TABLE
-    ===================================================== */
+    if (issuedCurrentPage < 1) {
 
-    function displayIssuedTable() {
+        issuedCurrentPage = 1;
 
-        const issuedList =
-            getIssuedRecords();
+    }
 
 
-        const totalRows =
-            issuedList.length;
+    /* NO DATA */
+
+    if (!totalRows) {
+
+        issuedTable.innerHTML =
+            emptyRow(
+                6,
+                "No issued books found."
+            );
+
+        issuedPagination.innerHTML =
+            "";
+
+        return;
+
+    }
 
 
-        const totalPages =
-            Math.ceil(
-                totalRows /
-                rowsPerPage
+    /* CURRENT PAGE */
+
+    const start =
+        (issuedCurrentPage - 1) *
+        rowsPerPage;
+
+
+    const end =
+        start +
+        rowsPerPage;
+
+
+    const pageList =
+        issuedList
+            .slice()
+            .reverse()
+            .slice(
+                start,
+                end
             );
 
 
-        /* Correct page if records are deleted/returned */
+    /* DISPLAY ISSUED RECORDS */
 
-        if (
-            issuedCurrentPage >
-                totalPages &&
-            totalPages > 0
-        ) {
+    issuedTable.innerHTML =
+        pageList
+            .map(function(issue) {
 
-            issuedCurrentPage =
-                totalPages;
-
-        }
+                const overdue =
+                    issue.returnDate &&
+                    issue.returnDate <
+                        today();
 
 
-        if (issuedCurrentPage < 1) {
-
-            issuedCurrentPage = 1;
-
-        }
+                let status;
 
 
-        /* NO DATA */
+                if (overdue) {
 
-        if (!totalRows) {
+                    status =
+                        `
+                        <span class="badge bg-danger">
+                            Overdue
+                        </span>
+                        `;
 
-            issuedTable.innerHTML =
-                emptyRow(
-                    6,
-                    "No issued books found."
-                );
+                } else {
 
-            issuedPagination.innerHTML =
-                "";
+                    status =
+                        `
+                        <span class="badge bg-primary">
+                            Issued
+                        </span>
+                        `;
 
-            return;
-        }
-
-
-        /* CURRENT PAGE */
-
-        const start =
-            (issuedCurrentPage - 1) *
-            rowsPerPage;
+                }
 
 
-        const end =
-            start +
-            rowsPerPage;
+                return `
+                    <tr>
+
+                        <td>
+                            ${escapeHTML(
+                                issue.bookName
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHTML(
+                                issue.memberName
+                            )}
+                        </td>
+
+                        <td>
+                            ${formatDate(
+                                issue.issueDate
+                            )}
+                        </td>
+
+                        <td>
+                            ${formatDate(
+                                issue.returnDate
+                            )}
+                        </td>
+
+                        <td>
+                            ${status}
+                        </td>
+
+                        <td>
+
+                            <button
+                                type="button"
+                                class="btn btn-sm btn-success"
+                                onclick="returnBook('${issue.id}')">
+
+                                <i class="bi bi-arrow-return-left"></i>
+
+                                Return
+
+                            </button>
+
+                        </td>
+
+                    </tr>
+                `;
+
+            })
+            .join("");
 
 
-        const pageList =
-            issuedList
-                .slice()
-                .reverse()
-                .slice(
-                    start,
-                    end
-                );
+    createIssuedPagination(
+        totalRows,
+        totalPages
+    );
 
-
-        /* DISPLAY ISSUED RECORDS */
-
-        issuedTable.innerHTML =
-            pageList
-                .map(function(issue) {
-
-                    const overdue =
-                        issue.returnDate &&
-                        issue.returnDate <
-                            today();
-
-
-                    let status;
-
-
-                    if (overdue) {
-
-                        status =
-                            `
-                            <span class="badge bg-danger">
-                                Overdue
-                            </span>
-                            `;
-
-                    } else {
-
-                        status =
-                            `
-                            <span class="badge bg-primary">
-                                Issued
-                            </span>
-                            `;
-                    }
-
-
-                    return `
-                        <tr>
-
-                            <td>
-                                ${escapeHTML(
-                                    issue.bookName
-                                )}
-                            </td>
-
-                            <td>
-                                ${escapeHTML(
-                                    issue.memberName
-                                )}
-                            </td>
-
-                            <td>
-                                ${formatDate(
-                                    issue.issueDate
-                                )}
-                            </td>
-
-                            <td>
-                                ${formatDate(
-                                    issue.returnDate
-                                )}
-                            </td>
-
-                            <td>
-                                ${status}
-                            </td>
-
-                            <td>
-
-                                <button
-                                    type="button"
-                                    class="btn btn-sm btn-success"
-                                    onclick="returnBook('${issue.id}')">
-
-                                    <i class="bi bi-arrow-return-left"></i>
-
-                                    Return
-
-                                </button>
-
-                            </td>
-
-                        </tr>
-                    `;
-
-                })
-                .join("");
-
-
-        createIssuedPagination(
-            totalRows,
-            totalPages
-        );
-    }
+}
 
 
     /* =====================================================
@@ -4591,18 +4948,18 @@ async function loadOptions() {
        DISPLAY RETURNED TABLE
     ===================================================== */
 
-    function displayReturnTable() {
+    async function displayReturnTable() {
 
         const returnedList =
-            getReturnedRecords();
+            await getReturnedRecords();
 
 
         const totalRows =
-            returnedList.length;
+            await returnedList.length;
 
 
         const totalPages =
-            Math.ceil(
+            await Math.ceil(
                 totalRows /
                 rowsPerPage
             );
@@ -4936,35 +5293,50 @@ async function loadOptions() {
             });
     }
 
-
-    /* =====================================================
-       ISSUE BOOK
-    ===================================================== */
-
-    form.addEventListener(
+/*ISSUE BOOK */
+form.addEventListener(
     "submit",
     async function(e) {
 
         e.preventDefault();
 
-        /*books = getData(KEYS.books);*/
-        members = getData(KEYS.members);
-        issues = getData(KEYS.issues);
 
-        const selectedBookId = bookSelect.value;
-        const selectedMemberId = memberSelect.value;
+// GET SELECTED VALUES
 
-        const book = books.find(
-            function(b) {
-                return String(b.id) === String(selectedBookId);
-            }
-        );
+        const selectedBookId =
+            bookSelect.value;
 
-        const member = members.find(
-            function(m) {
-                return String(m.id) === String(selectedMemberId);
-            }
-        );
+        const selectedMemberId =
+            memberSelect.value;
+
+
+// FIND SELECTED BOOK
+
+        const book =
+            books.find(
+                function(b) {
+
+                    return String(b.id) ===
+                        String(selectedBookId);
+
+                }
+            );
+
+
+// FIND SELECTED MEMBER
+
+        const member =
+            members.find(
+                function(m) {
+
+                    return String(m.member_id) ===
+                        String(selectedMemberId);
+
+                }
+            );
+
+
+// VALIDATION
 
         if (
             !book ||
@@ -4980,6 +5352,7 @@ async function loadOptions() {
             return;
         }
 
+
         if (
             returnDate.value <
             issueDate.value
@@ -4992,40 +5365,22 @@ async function loadOptions() {
             return;
         }
 
+
+// CHECK AVAILABLE COPIES
+
         if (
-            book.status !==
-            "Available"
+            Number(book.available_copies) <= 0
         ) {
 
             alert(
-                "This book is already issued."
+                "No copies available for this book."
             );
 
             return;
         }
 
-        const alreadyIssued =
-            issues.some(
-                function(issue) {
 
-                    return (
-                        String(issue.bookId) ===
-                            String(book.id) &&
-                        issue.status ===
-                            "Issued"
-                    );
-
-                }
-            );
-
-        if (alreadyIssued) {
-
-            alert(
-                "This book already has an active issue record."
-            );
-
-            return;
-        }
+// SAVE ISSUE TO DJANGO / MYSQL
 
         try {
 
@@ -5046,7 +5401,7 @@ async function loadOptions() {
                                 book.id,
 
                             member_id:
-                                member.id,
+                                member.member_id,
 
                             issue_date:
                                 issueDate.value,
@@ -5058,10 +5413,17 @@ async function loadOptions() {
                     }
                 );
 
+
             const data =
                 await response.json();
 
-            if (!response.ok || !data.success) {
+
+// CHECK BACKEND RESPONSE
+
+            if (
+                !response.ok ||
+                !data.success
+            ) {
 
                 throw new Error(
                     data.message ||
@@ -5070,35 +5432,24 @@ async function loadOptions() {
 
             }
 
-            book.status =
-                "Issued";
 
-            localStorage.setItem(
-                KEYS.books,
-                JSON.stringify(books)
-            );
+// RELOAD DATA FROM MYSQL
 
-            addNotification(
-                "Book Successfully Issued",
-                `The book "${book.title}" has been issued to ${member.name}.`,
-                "issued"
-            );
+            await loadOptions();
 
-            window.dispatchEvent(
-                new Event(
-                    "libraryDataChanged"
-                )
-            );
+
+// REFRESH TABLES
 
             issuedCurrentPage = 1;
 
-            loadOptions();
+            await displayIssuedTable();
 
-            displayIssuedTable();
-
-            displayReturnTable();
+            await displayReturnTable();
 
             updateDashboard();
+
+
+// RESET FORM
 
             form.reset();
 
@@ -5114,9 +5465,11 @@ async function loadOptions() {
             returnDate.min =
                 today();
 
+
             alert(
                 "Book issued successfully!"
             );
+
 
         } catch (error) {
 
@@ -5135,142 +5488,188 @@ async function loadOptions() {
     }
 );
 
-
 /* =====================================================
    RETURN BOOK
 ===================================================== */
+window.returnBook = async function(issueId) {
 
-window.returnBook =
-    async function(issueId) {
+    try {
 
+        // GET LATEST ISSUE DATA FROM MYSQL
+        const response =
+            await fetch(
+                "http://127.0.0.1:8000/api/issues/"
+            );
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Unable to load issue records."
+            );
+
+        }
+
+        const data =
+            await response.json();
+
+        if (!data.success) {
+
+            throw new Error(
+                data.message ||
+                "Unable to load issue records."
+            );
+
+        }
+
+        // UPDATE GLOBAL ISSUES ARRAY
         issues =
-            getData(KEYS.issues);
+            data.issues || [];
 
-        books =
-            getData(KEYS.books);
 
+        // FIND ISSUE
         const issue =
             issues.find(
                 function(item) {
-                    return String(item.id) === String(issueId);
+
+                    return String(item.id) ===
+                        String(issueId);
+
                 }
             );
 
+
         if (!issue) {
+
+            alert(
+                "Issue record not found."
+            );
+
             return;
         }
 
+
+        // CONFIRM RETURN
         if (
             !confirm(
                 `Return "${issue.bookName}" borrowed by ${issue.memberName}?`
             )
         ) {
+
             return;
         }
 
-        try {
 
-            const response =
-                await fetch(
-                    `http://127.0.0.1:8000/api/issues/${issueId}/`,
-                    {
-                        method: "PUT",
+        // RETURN BOOK TO DJANGO / MYSQL
+        const returnResponse =
+            await fetch(
+                `http://127.0.0.1:8000/api/issues/${issueId}/`,
+                {
+                    method: "PUT",
 
-                        headers: {
-                            "Content-Type":
-                                "application/json"
-                        },
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
 
-                        body: JSON.stringify({
-                            actual_return_date:
-                                today()
-                        })
-                    }
-                );
+                    body: JSON.stringify({
 
-            const data =
-                await response.json();
+                        actual_return_date:
+                            today()
 
-            if (!response.ok || !data.success) {
-
-                throw new Error(
-                    data.message ||
-                    "Unable to return book"
-                );
-
-            }
-
-            issue.status =
-                "Returned";
-
-            issue.actualReturnDate =
-                today();
-
-            const book =
-                books.find(
-                    function(item) {
-                        return String(item.id) ===
-                            String(issue.bookId);
-                    }
-                );
-
-            if (book) {
-
-                book.status =
-                    "Available";
-            }
-
-            localStorage.setItem(
-                KEYS.issues,
-                JSON.stringify(issues)
+                    })
+                }
             );
 
-            localStorage.setItem(
-                KEYS.books,
-                JSON.stringify(books)
+
+        const returnData =
+            await returnResponse.json();
+
+
+        // CHECK BACKEND RESPONSE
+        if (
+            !returnResponse.ok ||
+            !returnData.success
+        ) {
+
+            throw new Error(
+                returnData.message ||
+                "Unable to return book"
             );
 
-            notifyBookReturned(
-                issue.bookName,
-                issue.memberName,
-                issue.id
-            );
-
-            window.dispatchEvent(
-                new Event(
-                    "libraryDataChanged"
-                )
-            );
-
-            issuedCurrentPage = 1;
-
-            returnCurrentPage = 1;
-
-            loadOptions();
-
-            displayIssuedTable();
-
-            displayReturnTable();
-
-            updateDashboard();
-
-            alert(
-                "Book returned successfully!"
-            );
-
-        } catch (error) {
-
-            console.error(
-                "Error returning book:",
-                error
-            );
-
-            alert(
-                error.message ||
-                "Unable to return book."
-            );
         }
-    };
+
+
+        // NOTIFICATION
+        notifyBookReturned(
+            issue.bookName,
+            issue.memberName,
+            issue.id
+        );
+
+
+        // GET FRESH DATA FROM MYSQL
+        const freshResponse =
+            await fetch(
+                "http://127.0.0.1:8000/api/issues/"
+            );
+
+
+        const freshData =
+            await freshResponse.json();
+
+
+        if (freshData.success) {
+
+            issues =
+                freshData.issues || [];
+
+        }
+
+
+        // REFRESH ISSUED TABLE
+        issuedCurrentPage = 1;
+
+        await displayIssuedTable();
+
+
+        // REFRESH RETURNED TABLE
+        returnCurrentPage = 1;
+
+        await displayReturnTable();
+
+
+        // REFRESH DASHBOARD DATA
+        if (
+            typeof updateDashboard ===
+            "function"
+        ) {
+
+            await updateDashboard();
+
+        }
+
+
+        // SUCCESS
+        alert(
+            "Book returned successfully!"
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Error returning book:",
+            error
+        );
+
+        alert(
+            error.message ||
+            "Unable to return book."
+        );
+
+    }
+
+};
 
     /* =====================================================
        INITIAL LOAD
@@ -5287,34 +5686,45 @@ window.returnBook =
        DATA UPDATE
     ===================================================== */
 
-    window.addEventListener(
-        "libraryDataChanged",
-        function() {
+   
+window.addEventListener(
+    "libraryDataChanged",
+    async function() {
 
-            books =
-                getData(KEYS.books);
+        try {
 
-            members =
-                getData(KEYS.members);
+            // LOAD LATEST DATA FROM MYSQL
+            await loadOptions();
 
-            issues =
-                getData(KEYS.issues);
 
+            // RESET PAGINATION
 
             issuedCurrentPage = 1;
 
             returnCurrentPage = 1;
 
 
-            loadOptions();
+            // REFRESH ISSUED TABLE
 
-            displayIssuedTable();
+            await displayIssuedTable();
 
-            displayReturnTable();
+
+            // REFRESH RETURNED TABLE
+
+            await displayReturnTable();
+
+
+        } catch (error) {
+
+            console.error(
+                "Error refreshing issue/return data:",
+                error
+            );
 
         }
-    );
 
+    }
+);
 
     /* =====================================================
        STORAGE UPDATE
