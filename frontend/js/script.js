@@ -1431,127 +1431,186 @@ if (phoneInput) {
 
 }
 
-    let members =
-        getData(KEYS.members);
+let members = [];
 
-    const rowsPerPage = 5;
+const rowsPerPage = 5;
 
-    let currentPage = 1;
+let currentPage = 1;
 
-    let currentList = members;
+let currentList = members;
 
 
-    /* =====================================================
-       CREATE PAGINATION BOX IF IT DOES NOT EXIST
-    ===================================================== */
+/* =====================================================
+   LOAD MEMBERS FROM MYSQL
+===================================================== */
 
-    let pagination =
-        document.getElementById("memberPagination");
+async function loadMembersFromBackend() {
 
-    if (!pagination) {
+    try {
 
-        pagination =
-            document.createElement("div");
-
-        pagination.id =
-            "memberPagination";
-
-        pagination.className =
-            "mt-3 d-flex justify-content-center";
-
-        const tableContainer =
-            table.closest(".table-responsive");
-
-        if (tableContainer) {
-
-            tableContainer.parentNode.insertBefore(
-                pagination,
-                tableContainer.nextSibling
+        const response =
+            await fetch(
+                "http://127.0.0.1:8000/api/members/"
             );
 
-        } else {
+        if (!response.ok) {
 
-            table.parentNode.appendChild(
-                pagination
+            throw new Error(
+                "Unable to load members"
             );
+
         }
+
+        const data =
+            await response.json();
+
+        if (!data.success) {
+
+            throw new Error(
+                data.message ||
+                "Unable to load members"
+            );
+
+        }
+
+        members =
+            data.members || [];
+
+        currentList =
+            members;
+
+        console.log(
+            "Members loaded from MySQL:",
+            members
+        );
+
+        display(
+            currentList
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Error loading members:",
+            error
+        );
+
+    }
+
+} // Function ends here
+
+
+// INITIAL LOAD FROM MYSQL
+loadMembersFromBackend();
+
+
+/* 
+   CREATE PAGINATION BOX IF IT DOES NOT EXIST
+ */
+
+let pagination =
+    document.getElementById("memberPagination");
+
+if (!pagination) {
+
+    pagination =
+        document.createElement("div");
+
+    pagination.id =
+        "memberPagination";
+
+    pagination.className =
+        "mt-3 d-flex justify-content-center";
+
+    const tableContainer =
+        table.closest(".table-responsive");
+
+    if (tableContainer) {
+
+        tableContainer.parentNode.insertBefore(
+            pagination,
+            tableContainer.nextSibling
+        );
+
+    } else {
+
+        table.parentNode.appendChild(
+            pagination
+        );
+    }
+}
+/* =====================================================
+   DISPLAY MEMBERS
+===================================================== */
+
+function display(list = members) {
+
+    currentList = list;
+
+    const totalRows =
+        currentList.length;
+
+    const totalPages =
+        Math.ceil(
+            totalRows / rowsPerPage
+        );
+
+
+    if (
+        currentPage > totalPages &&
+        totalPages > 0
+    ) {
+
+        currentPage =
+            totalPages;
+
     }
 
 
-    /* =====================================================
-       DISPLAY MEMBERS
-    ===================================================== */
+    if (currentPage < 1) {
 
-    function display(list = members) {
+        currentPage = 1;
 
-        currentList = list;
-
-        const totalRows =
-            currentList.length;
-
-        const totalPages =
-            Math.ceil(
-                totalRows / rowsPerPage
-            );
+    }
 
 
-        /* If current page is greater than total pages */
+    /* NO DATA */
 
-        if (
-            currentPage > totalPages &&
-            totalPages > 0
-        ) {
-
-            currentPage =
-                totalPages;
-        }
-
-
-        if (currentPage < 1) {
-            currentPage = 1;
-        }
-
-
-        /* NO DATA */
-
-        if (!totalRows) {
-
-            table.innerHTML =
-                emptyRow(
-                    7,
-                    "No members found."
-                );
-
-            pagination.innerHTML = "";
-
-            return;
-        }
-
-
-        /* =================================================
-           GET CURRENT PAGE DATA
-        ================================================= */
-
-        const start =
-            (currentPage - 1) *
-            rowsPerPage;
-
-        const end =
-            start + rowsPerPage;
-
-        const pageList =
-            currentList.slice(
-                start,
-                end
-            );
-
-
-        /* =================================================
-           DISPLAY TABLE
-        ================================================= */
+    if (!totalRows) {
 
         table.innerHTML =
-            pageList.map(function(member) {
+            emptyRow(
+                7,
+                "No members found."
+            );
+
+        return;
+
+    }
+
+
+    /* PAGINATION DATA */
+
+    const start =
+        (currentPage - 1) *
+        rowsPerPage;
+
+    const end =
+        start +
+        rowsPerPage;
+
+    const pageList =
+        currentList.slice(
+            start,
+            end
+        );
+
+
+    /* DISPLAY MEMBERS */
+
+    table.innerHTML =
+        pageList
+            .map(function(member) {
 
                 const badge =
                     member.status === "Active"
@@ -1563,19 +1622,27 @@ if (phoneInput) {
                     <tr>
 
                         <td>
-                            ${escapeHTML(member.id)}
+                            ${escapeHTML(
+                                member.member_id
+                            )}
                         </td>
 
                         <td>
-                            ${escapeHTML(member.name)}
+                            ${escapeHTML(
+                                member.name
+                            )}
                         </td>
 
                         <td>
-                            ${escapeHTML(member.email)}
+                            ${escapeHTML(
+                                member.email
+                            )}
                         </td>
 
                         <td>
-                            ${escapeHTML(member.phone)}
+                            ${escapeHTML(
+                                member.phone
+                            )}
                         </td>
 
                         <td>
@@ -1618,18 +1685,13 @@ if (phoneInput) {
                     </tr>
                 `;
 
-            }).join("");
+            })
+            .join("");
+
+}
 
 
-        /* =================================================
-           UPDATE PAGINATION
-        ================================================= */
 
-        createMemberPagination(
-            totalRows,
-            totalPages
-        );
-    }
 
 
     /* =====================================================
@@ -1862,104 +1924,167 @@ if (phoneInput) {
             });
     }
 
+/* =====================================================
+   ADD MEMBER - MYSQL
+===================================================== */
 
-    /* =====================================================
-       ADD MEMBER
-    ===================================================== */
+form.addEventListener(
+    "submit",
+    async function(e) {
 
-    form.addEventListener(
-        "submit",
-        function(e) {
-
-            e.preventDefault();
-
-            const memberId =
-    document.getElementById(
-        "addMemberId"
-    ).value.trim();
+        e.preventDefault();
 
 
-            const name =
-                document.getElementById(
-                    "addName"
-                ).value.trim();
+        const memberId =
+            document.getElementById(
+                "addMemberId"
+            ).value.trim();
 
 
-            const email =
-                document.getElementById(
-                    "addEmail"
-                ).value.trim();
+        const name =
+            document.getElementById(
+                "addName"
+            ).value.trim();
 
 
-            const phone =
-                document.getElementById(
-                    "addPhone"
-                ).value.trim();
+        const email =
+            document.getElementById(
+                "addEmail"
+            ).value.trim();
 
 
-            const membership =
-                document.getElementById(
-                    "addMembership"
-                ).value;
+        const phone =
+            document.getElementById(
+                "addPhone"
+            ).value.trim();
 
 
-           if (
-    !memberId ||
-    !name ||
-    !email ||
-    !phone ||
-    !membership
-) {
-    alert(
-        "Please fill all fields."
+        const membership =
+            document.getElementById(
+                "addMembership"
+            ).value;
+
+
+        /* VALIDATION */
+
+        if (
+            !memberId ||
+            !name ||
+            !email ||
+            !phone ||
+            !membership
+        ) {
+
+            alert(
+                "Please fill all fields."
+            );
+
+            return;
+
+        }
+
+
+        /* PHONE VALIDATION */
+
+        if (
+            !/^[6-9][0-9]{9}$/.test(phone)
+        ) {
+
+            alert(
+                "Please enter a valid 10-digit phone number."
+            );
+
+            return;
+
+        }
+
+
+        /* SAVE TO MYSQL */
+
+        try {
+
+            const response =
+                await fetch(
+                    "http://127.0.0.1:8000/api/members/",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+
+                            member_id:
+                                memberId,
+
+                            name:
+                                name,
+
+                            email:
+                                email,
+
+                            phone:
+                                phone,
+
+                            membership:
+                                membership,
+
+                            status:
+                                "Active"
+
+                        })
+
+                    }
+                );
+
+
+            const responseText =
+    await response.text();
+
+let data;
+
+try {
+
+    data =
+        JSON.parse(responseText);
+
+} catch (error) {
+
+    console.error(
+        "Backend response:",
+        responseText
     );
 
-    return;
-}
-
-/* PHONE NUMBER VALIDATION */
-
-if (!/^[6-9][0-9]{9}$/.test(phone)) {
-
-    alert(
-        "Please enter a valid 10-digit phone number."
+    throw new Error(
+        "Server error. Check Django terminal."
     );
 
-    return;
 }
 
 
-            const member = {
+            if (
+                !response.ok ||
+                !data.success
+            ) {
 
-    id: memberId,
+                throw new Error(
+                    data.message ||
+                    "Unable to add member"
+                );
 
-    name: name,
-
-    email: email,
-
-    phone: phone,
-
-    membership: membership,
-
-    status: "Active"
-};
+            }
 
 
-            members.push(member);
+            /* RELOAD DATA FROM MYSQL */
 
-saveData(
-    KEYS.members,
-    members
-);
+            currentPage = 1;
 
-// 🔔 New Member Notification
-notifyNewMember(member.name);
-
-currentPage = 1;
+            await loadMembersFromBackend();
 
 
-            display(members);
-
+            /* RESET FORM */
 
             form.reset();
 
@@ -1971,8 +2096,24 @@ currentPage = 1;
                 "Member added successfully!"
             );
 
+
+        } catch (error) {
+
+            console.error(
+                "Error adding member:",
+                error
+            );
+
+
+            alert(
+                error.message ||
+                "Unable to add member."
+            );
+
         }
-    );
+
+    }
+);
 
 
     /* =====================================================
@@ -2033,173 +2174,186 @@ currentPage = 1;
     ===================================================== */
 
     window.editMember =
-        function(memberId) {
+    function(memberId) {
 
-            const member =
-                members.find(
-                    function(m) {
+        console.log(
+            "Edit clicked for ID:",
+            memberId
+        );
 
-                        return m.id ===
-                            memberId;
+        const member =
+            members.find(
+                function(m) {
 
-                    }
-                );
+                    return String(m.id) ===
+                        String(memberId);
 
-
-            if (!member) {
-                return;
-            }
-
-
-            const fields = {
-
-                editMemberId:
-                    member.id,
-
-                editName:
-                    member.name,
-
-                editEmail:
-                    member.email,
-
-                editPhone:
-                    member.phone,
-
-                editMembership:
-                    member.membership,
-
-                editStatus:
-                    member.status
-
-            };
+                }
+            );
 
 
-            Object.entries(fields)
-                .forEach(
-                    function([id, value]) {
+        if (!member) {
 
-                        const element =
-                            document.getElementById(
-                                id
-                            );
+            console.error(
+                "Member not found:",
+                memberId
+            );
 
+            return;
 
-                        if (element) {
-
-                            element.value =
-                                value;
-
-                        }
-
-                    }
-                );
+        }
 
 
-            const modal =
-                document.getElementById(
-                    "editMemberModal"
-                );
+        const fields = {
 
+            editMemberId:
+                member.id,
 
-            if (
-                modal &&
-                typeof bootstrap !==
-                "undefined"
-            ) {
+            editName:
+                member.name,
 
-                bootstrap.Modal
-                    .getOrCreateInstance(
-                        modal
-                    )
-                    .show();
-            }
+            editEmail:
+                member.email,
+
+            editPhone:
+                member.phone,
+
+            editMembership:
+                member.membership,
+
+            editStatus:
+                member.status
 
         };
 
 
-    /* =====================================================
-       UPDATE MEMBER
-    ===================================================== */
+        Object.entries(fields)
+            .forEach(
+                function([id, value]) {
 
-    const editForm =
-        document.getElementById(
-            "editMemberForm"
-        );
+                    const element =
+                        document.getElementById(id);
 
+                    if (element) {
+                        element.value = value;
+                    }
 
-    if (editForm) {
-
-        editForm.addEventListener(
-            "submit",
-            function(e) {
-
-                e.preventDefault();
+                }
+            );
 
 
-                const id =
-                    document.getElementById(
-                        "editMemberId"
-                    ).value;
+        const modal =
+            document.getElementById(
+                "editMemberModal"
+            );
 
 
-                const member =
-                    members.find(
-                        function(m) {
+        if (
+            modal &&
+            typeof bootstrap !== "undefined"
+        ) {
 
-                            return m.id === id;
+            bootstrap.Modal
+                .getOrCreateInstance(modal)
+                .show();
 
+        }
+
+    };
+
+/* =====================================================
+   UPDATE MEMBER - MYSQL
+===================================================== */
+
+const editForm =
+    document.getElementById(
+        "editMemberForm"
+    );
+
+
+if (editForm) {
+
+    editForm.addEventListener(
+        "submit",
+        async function(e) {
+
+            e.preventDefault();
+
+
+            const memberId =
+                document.getElementById(
+                    "editMemberId"
+                ).value;
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        `http://127.0.0.1:8000/api/members/${memberId}/`,
+                        {
+                            method: "PUT",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body: JSON.stringify({
+
+                                name:
+                                    document.getElementById(
+                                        "editName"
+                                    ).value.trim(),
+
+                                email:
+                                    document.getElementById(
+                                        "editEmail"
+                                    ).value.trim(),
+
+                                phone:
+                                    document.getElementById(
+                                        "editPhone"
+                                    ).value.trim(),
+
+                                membership:
+                                    document.getElementById(
+                                        "editMembership"
+                                    ).value,
+
+                                status:
+                                    document.getElementById(
+                                        "editStatus"
+                                    ).value
+
+                            })
                         }
                     );
 
 
-                if (!member) {
-                    return;
+                const data =
+                    await response.json();
+
+
+                if (
+                    !response.ok ||
+                    !data.success
+                ) {
+
+                    throw new Error(
+                        data.message ||
+                        "Unable to update member"
+                    );
+
                 }
 
 
-                member.name =
-                    document.getElementById(
-                        "editName"
-                    ).value.trim();
+                /* RELOAD MEMBERS FROM MYSQL */
+
+                await loadMembersFromBackend();
 
 
-                member.email =
-                    document.getElementById(
-                        "editEmail"
-                    ).value.trim();
-
-
-                member.phone =
-                    document.getElementById(
-                        "editPhone"
-                    ).value.trim();
-
-
-                member.membership =
-                    document.getElementById(
-                        "editMembership"
-                    ).value;
-
-
-                member.status =
-                    document.getElementById(
-                        "editStatus"
-                    ).value;
-
-
-                saveData(
-                    KEYS.members,
-                    members
-                );
-
-
-                display(
-                    members
-                );
-
-
-                updateDashboard();
-
+                /* CLOSE MODAL */
 
                 const modal =
                     document.getElementById(
@@ -2218,84 +2372,104 @@ currentPage = 1;
                 }
 
 
+                updateDashboard();
+
+
                 alert(
                     "Member updated successfully!"
                 );
 
-            }
-        );
-    }
 
+            } catch (error) {
 
-    /* =====================================================
-       DELETE MEMBER
-    ===================================================== */
-
-    window.deleteMember =
-        function(memberId) {
-
-            const member =
-                members.find(
-                    function(m) {
-
-                        return m.id ===
-                            memberId;
-
-                    }
+                console.error(
+                    "Error updating member:",
+                    error
                 );
 
 
-            if (!member) {
-                return;
-            }
-
-
-            if (
-                !confirm(
-                    `Are you sure you want to delete ${member.name}?`
-                )
-            ) {
-
-                return;
-            }
-
-
-            members =
-                members.filter(
-                    function(m) {
-
-                        return m.id !==
-                            memberId;
-
-                    }
+                alert(
+                    error.message ||
+                    "Unable to update member."
                 );
 
+            }
 
-            saveData(
-                KEYS.members,
-                members
+        }
+    );
+
+}
+
+/* =====================================================
+   DELETE MEMBER - MYSQL
+===================================================== */
+
+window.deleteMember =
+    async function(memberId) {
+
+        const member =
+            members.find(
+                function(m) {
+
+                    return String(m.id) ===
+                        String(memberId);
+
+                }
             );
 
 
-            const totalPages =
-                Math.ceil(
-                    members.length /
-                    rowsPerPage
+        if (!member) {
+
+            console.error(
+                "Member not found:",
+                memberId
+            );
+
+            return;
+
+        }
+
+
+        if (
+            !confirm(
+                `Are you sure you want to delete ${member.name}?`
+            )
+        ) {
+            return;
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+                    `http://127.0.0.1:8000/api/members/${memberId}/`,
+                    {
+                        method: "DELETE"
+                    }
                 );
 
 
+            const data =
+                await response.json();
+
+
             if (
-                currentPage >
-                totalPages
+                !response.ok ||
+                !data.success
             ) {
 
-                currentPage =
-                    totalPages || 1;
+                throw new Error(
+                    data.message ||
+                    "Unable to delete member"
+                );
 
             }
 
 
-            display(members);
+            /* RELOAD MEMBERS FROM MYSQL */
+
+            await loadMembersFromBackend();
 
 
             updateDashboard();
@@ -2305,7 +2479,23 @@ currentPage = 1;
                 "Member deleted successfully!"
             );
 
-        };
+
+        } catch (error) {
+
+            console.error(
+                "Error deleting member:",
+                error
+            );
+
+
+            alert(
+                error.message ||
+                "Unable to delete member."
+            );
+
+        }
+
+    };
 
 
     /* =====================================================
@@ -2335,7 +2525,7 @@ currentPage = 1;
        INITIAL DISPLAY
     ===================================================== */
 
-    display(members);
+    loadMembersFromBackend();
 
 }
 
@@ -5293,7 +5483,10 @@ async function displayIssuedTable() {
             });
     }
 
-/*ISSUE BOOK */
+/* =====================================================
+   ADD MEMBER - MYSQL
+===================================================== */
+
 form.addEventListener(
     "submit",
     async function(e) {
@@ -5301,48 +5494,44 @@ form.addEventListener(
         e.preventDefault();
 
 
-// GET SELECTED VALUES
-
-        const selectedBookId =
-            bookSelect.value;
-
-        const selectedMemberId =
-            memberSelect.value;
+        const memberId =
+            document.getElementById(
+                "addMemberId"
+            ).value.trim();
 
 
-// FIND SELECTED BOOK
-
-        const book =
-            books.find(
-                function(b) {
-
-                    return String(b.id) ===
-                        String(selectedBookId);
-
-                }
-            );
+        const name =
+            document.getElementById(
+                "addName"
+            ).value.trim();
 
 
-// FIND SELECTED MEMBER
-
-        const member =
-            members.find(
-                function(m) {
-
-                    return String(m.member_id) ===
-                        String(selectedMemberId);
-
-                }
-            );
+        const email =
+            document.getElementById(
+                "addEmail"
+            ).value.trim();
 
 
-// VALIDATION
+        const phone =
+            document.getElementById(
+                "addPhone"
+            ).value.trim();
+
+
+        const membership =
+            document.getElementById(
+                "addMembership"
+            ).value;
+
+
+        /* VALIDATION */
 
         if (
-            !book ||
-            !member ||
-            !issueDate.value ||
-            !returnDate.value
+            !memberId ||
+            !name ||
+            !email ||
+            !phone ||
+            !membership
         ) {
 
             alert(
@@ -5350,43 +5539,30 @@ form.addEventListener(
             );
 
             return;
+
         }
 
 
+        /* PHONE VALIDATION */
+
         if (
-            returnDate.value <
-            issueDate.value
+            !/^[6-9][0-9]{9}$/.test(phone)
         ) {
 
             alert(
-                "Return date cannot be before issue date."
+                "Please enter a valid 10-digit phone number."
             );
 
             return;
+
         }
 
-
-// CHECK AVAILABLE COPIES
-
-        if (
-            Number(book.available_copies) <= 0
-        ) {
-
-            alert(
-                "No copies available for this book."
-            );
-
-            return;
-        }
-
-
-// SAVE ISSUE TO DJANGO / MYSQL
 
         try {
 
             const response =
                 await fetch(
-                    "http://127.0.0.1:8000/api/issues/",
+                    "http://127.0.0.1:8000/api/members/",
                     {
                         method: "POST",
 
@@ -5397,17 +5573,23 @@ form.addEventListener(
 
                         body: JSON.stringify({
 
-                            book_id:
-                                book.id,
-
                             member_id:
-                                member.member_id,
+                                memberId,
 
-                            issue_date:
-                                issueDate.value,
+                            name:
+                                name,
 
-                            return_date:
-                                returnDate.value
+                            email:
+                                email,
+
+                            phone:
+                                phone,
+
+                            membership:
+                                membership,
+
+                            status:
+                                "Active"
 
                         })
                     }
@@ -5418,8 +5600,6 @@ form.addEventListener(
                 await response.json();
 
 
-// CHECK BACKEND RESPONSE
-
             if (
                 !response.ok ||
                 !data.success
@@ -5427,66 +5607,50 @@ form.addEventListener(
 
                 throw new Error(
                     data.message ||
-                    "Unable to issue book"
+                    "Unable to add member"
                 );
 
             }
 
 
-// RELOAD DATA FROM MYSQL
+            /* RELOAD MEMBERS FROM MYSQL */
 
-            await loadOptions();
+            currentPage = 1;
+
+            await loadMembersFromBackend();
 
 
-// REFRESH TABLES
+            /* RESET FORM */
 
-            issuedCurrentPage = 1;
+            form.reset();
 
-            await displayIssuedTable();
-
-            await displayReturnTable();
 
             updateDashboard();
 
 
-// RESET FORM
-
-            form.reset();
-
-            issueDate.value =
-                today();
-
-            issueDate.min =
-                today();
-
-            issueDate.max =
-                today();
-
-            returnDate.min =
-                today();
-
-
             alert(
-                "Book issued successfully!"
+                "Member added successfully!"
             );
 
 
         } catch (error) {
 
             console.error(
-                "Error issuing book:",
+                "Error adding member:",
                 error
             );
 
+
             alert(
                 error.message ||
-                "Unable to issue book."
+                "Unable to add member."
             );
 
         }
 
     }
 );
+
 
 /* =====================================================
    RETURN BOOK
@@ -6749,9 +6913,11 @@ function applyGlobalTheme() {
 
 document.addEventListener(
     "DOMContentLoaded",
-    function () {
+    function() {
 
         applyGlobalTheme();
+
+        initMembers();
 
     }
 );

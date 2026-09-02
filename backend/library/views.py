@@ -4,9 +4,7 @@ from .models import Book, Issue, Member
 import json
 
 
-# =====================================================
 # BOOKS API
-# =====================================================
 
 @csrf_exempt
 def books(request):
