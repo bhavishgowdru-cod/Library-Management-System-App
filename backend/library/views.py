@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import Book, Issue, Member
+from .models import Book, Issue, Member, ExtensionRequest
 import json
 
 
@@ -368,31 +369,13 @@ def issue_by_id(request, id):
 # =====================================================
 # MEMBERS API
 # =====================================================
-
 @csrf_exempt
 def members(request):
 
-    if request.method == "GET":
-        members_data = []
+    if request.method == "POST":
 
-        for member in Member.objects.all().order_by("-id"):
-            members_data.append({
-                "id": member.id,
-                "member_id": member.member_id,
-                "name": member.name,
-                "email": member.email,
-                "phone": member.phone,
-                "membership": member.membership,
-                "status": member.status
-            })
-
-        return JsonResponse({
-            "success": True,
-            "members": members_data
-        })
-
-    elif request.method == "POST":
         try:
+
             data = json.loads(request.body)
 
             member_id = data.get("member_id")
@@ -402,17 +385,30 @@ def members(request):
             membership = data.get("membership")
             status = data.get("status", "Active")
 
-            if not member_id or not name or not email or not phone or not membership:
+
+            if (
+                not member_id or
+                not name or
+                not email or
+                not phone or
+                not membership
+            ):
+
                 return JsonResponse({
                     "success": False,
-                    "message": "All member fields are required"
+                    "message": "All fields are required"
                 }, status=400)
 
-            if Member.objects.filter(member_id=member_id).exists():
+
+            if Member.objects.filter(
+                member_id=member_id
+            ).exists():
+
                 return JsonResponse({
                     "success": False,
                     "message": "Member ID already exists"
                 }, status=400)
+
 
             member = Member.objects.create(
                 member_id=member_id,
@@ -422,6 +418,7 @@ def members(request):
                 membership=membership,
                 status=status
             )
+
 
             return JsonResponse({
                 "success": True,
@@ -437,15 +434,55 @@ def members(request):
                 }
             }, status=201)
 
+
         except json.JSONDecodeError:
+
             return JsonResponse({
                 "success": False,
                 "message": "Invalid JSON"
             }, status=400)
 
+
+    elif request.method == "GET":
+
+        members_data = []
+
+        for member in Member.objects.all().order_by("-id"):
+
+            members_data.append({
+
+                "id": member.id,
+
+                "member_id": member.member_id,
+
+                "name": member.name,
+
+                "email": member.email,
+
+                "phone": member.phone,
+
+                "membership": member.membership,
+
+                "status": member.status
+
+            })
+
+
+        return JsonResponse({
+
+            "success": True,
+
+            "members": members_data
+
+        })
+
+
     return JsonResponse({
+
         "success": False,
+
         "message": "Method not allowed"
+
     }, status=405)
 
 
@@ -493,4 +530,426 @@ def member_by_id(request, id):
     return JsonResponse({
         "success": False,
         "message": "Method not allowed"
+    }, status=405)
+
+# =====================================================
+# RETURN BOOK API
+# =====================================================
+
+@csrf_exempt
+def return_book(request, id):
+
+    if request.method != "PUT":
+
+        return JsonResponse({
+            "success": False,
+            "message": "Method not allowed"
+        }, status=405)
+
+
+    try:
+
+        issue = Issue.objects.get(id=id)
+
+    except Issue.DoesNotExist:
+
+        return JsonResponse({
+            "success": False,
+            "message": "Issue record not found"
+        }, status=404)
+
+
+    if issue.status == "Returned":
+
+        return JsonResponse({
+            "success": False,
+            "message": "Book already returned"
+        }, status=400)
+
+
+    data = json.loads(request.body)
+
+    actual_return_date = data.get("actual_return_date")
+
+
+    if not actual_return_date:
+
+        return JsonResponse({
+            "success": False,
+            "message": "Return date is required"
+        }, status=400)
+
+
+    issue.status = "Returned"
+    issue.actual_return_date = actual_return_date
+    issue.save()
+
+
+    # Increase available book copies
+    book = issue.book
+    book.available_copies += 1
+    book.save()
+
+
+    return JsonResponse({
+
+        "success": True,
+
+        "message": "Book returned successfully"
+
+    })
+
+# =====================================================
+# RETURNS API
+# =====================================================
+
+@csrf_exempt
+def returns(request):
+
+    if request.method == "GET":
+
+        returned_books = Issue.objects.filter(
+            status="Returned"
+        ).select_related("book")
+
+        data = []
+
+        for issue in returned_books:
+
+            data.append({
+
+                "id": issue.id,
+
+                "book_id": issue.book.id,
+
+                "book_name": issue.book.book_name,
+
+                "member_id": issue.member_id,
+
+                "issue_date": str(issue.issue_date),
+
+                "return_date": str(issue.return_date),
+
+                "actual_return_date": (
+                    str(issue.actual_return_date)
+                    if issue.actual_return_date
+                    else None
+                ),
+
+                "status": issue.status
+
+            })
+
+        return JsonResponse({
+            "success": True,
+            "returns": data
+        })
+
+
+    return JsonResponse({
+        "success": False,
+        "message": "Method not allowed"
+    }, status=405)
+
+# =====================================================
+# EXTENSION REQUESTS API
+# =====================================================
+
+@csrf_exempt
+def extension_requests(request):
+
+    if request.method == "POST":
+
+        try:
+
+            data = json.loads(request.body)
+
+            issue_id = data.get("issue_id")
+
+            requested_return_date = data.get(
+                "requested_return_date"
+            )
+
+            reason = data.get("reason")
+
+
+            if (
+                not issue_id or
+                not requested_return_date or
+                not reason
+            ):
+
+                return JsonResponse({
+                    "success": False,
+                    "message": "All fields are required"
+                }, status=400)
+
+
+            try:
+
+                issue = Issue.objects.get(
+                    id=issue_id
+                )
+
+            except Issue.DoesNotExist:
+
+                return JsonResponse({
+                    "success": False,
+                    "message": "Issue record not found"
+                }, status=404)
+
+
+            extension = ExtensionRequest.objects.create(
+
+                issue=issue,
+
+                requested_return_date=
+                    requested_return_date,
+
+                reason=reason,
+
+                status="Pending"
+
+            )
+
+
+            return JsonResponse({
+
+                "success": True,
+
+                "message":
+                    "Extension request created successfully",
+
+                "extension": {
+
+                    "id": extension.id,
+
+                    "issue_id": extension.issue.id,
+
+                    "requested_return_date":
+                        str(
+                            extension.requested_return_date
+                        ),
+
+                    "reason": extension.reason,
+
+                    "status": extension.status
+
+                }
+
+            }, status=201)
+
+
+        except json.JSONDecodeError:
+
+            return JsonResponse({
+
+                "success": False,
+
+                "message": "Invalid JSON"
+
+            }, status=400)
+
+
+    elif request.method == "GET":
+
+        extensions_data = []
+
+        extensions = (
+            ExtensionRequest.objects
+            .all()
+            .order_by("-id")
+        )
+
+
+        for extension in extensions:
+
+            extensions_data.append({
+
+                "id": extension.id,
+
+                "issue_id":
+                    extension.issue.id,
+
+                "book_id":
+                    extension.issue.book.id,
+
+                "book_name":
+                    extension.issue.book.book_name,
+
+                "member_id":
+                    extension.issue.member_id,
+
+                "issue_date":
+                    str(
+                        extension.issue.issue_date
+                    ),
+
+                "current_return_date":
+                    str(
+                        extension.issue.return_date
+                    ),
+
+                "requested_return_date":
+                    str(
+                        extension.requested_return_date
+                    ),
+
+                "reason":
+                    extension.reason,
+
+                "status":
+                    extension.status
+
+            })
+
+
+        return JsonResponse({
+
+            "success": True,
+
+            "extensions": extensions_data
+
+        })
+
+
+    return JsonResponse({
+
+        "success": False,
+
+        "message": "Method not allowed"
+
+    }, status=405)
+
+# =====================================================
+# EXTENSION REQUEST BY ID API
+# =====================================================
+
+@csrf_exempt
+def extension_request_by_id(request, id):
+
+    try:
+
+        extension = ExtensionRequest.objects.get(
+            id=id
+        )
+
+    except ExtensionRequest.DoesNotExist:
+
+        return JsonResponse({
+            "success": False,
+            "message": "Extension request not found"
+        }, status=404)
+
+
+    if request.method == "GET":
+
+        return JsonResponse({
+
+            "success": True,
+
+            "extension": {
+
+                "id": extension.id,
+
+                "issue_id": extension.issue.id,
+
+                "requested_return_date":
+                    str(extension.requested_return_date),
+
+                "reason": extension.reason,
+
+                "status": extension.status
+
+            }
+
+        })
+
+
+    elif request.method == "PUT":
+
+        try:
+
+            data = json.loads(request.body)
+
+            status = data.get("status")
+
+
+            if status not in [
+                "Pending",
+                "Approved",
+                "Rejected"
+            ]:
+
+                return JsonResponse({
+
+                    "success": False,
+
+                    "message":
+                        "Status must be Pending, Approved or Rejected"
+
+                }, status=400)
+
+
+            extension.status = status
+
+
+            # If approved, update issue return date
+            if status == "Approved":
+
+                extension.issue.return_date = (
+                    extension.requested_return_date
+                )
+
+                extension.issue.save()
+
+
+            extension.save()
+
+
+            return JsonResponse({
+
+                "success": True,
+
+                "message":
+                    "Extension request updated successfully",
+
+                "status":
+                    extension.status
+
+            })
+
+
+        except json.JSONDecodeError:
+
+            return JsonResponse({
+
+                "success": False,
+
+                "message": "Invalid JSON"
+
+            }, status=400)
+
+
+    elif request.method == "DELETE":
+
+        extension.delete()
+
+
+        return JsonResponse({
+
+            "success": True,
+
+            "message":
+                "Extension request deleted successfully"
+
+        })
+
+
+    return JsonResponse({
+
+        "success": False,
+
+        "message": "Method not allowed"
+
     }, status=405)
