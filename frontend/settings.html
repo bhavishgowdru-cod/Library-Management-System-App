@@ -156,78 +156,225 @@
         <main class="main-content">
 
 
-            <!-- =================================================
-                 NAVBAR
-            ================================================== -->
+    <!-- =================================================
+     NAVBAR
+================================================== -->
 
-            <nav class="navbar bg-white shadow-sm px-3 mb-4">
-
-
-                <!-- SIDEBAR TOGGLE -->
-
-                <button
-                    type="button"
-                    id="sidebarToggle"
-                    class="btn btn-outline-primary">
-
-                    <i class="bi bi-list"></i>
-
-                </button>
+<nav class="navbar bg-white shadow-sm px-3 mb-4">
 
 
-                <!-- PAGE TITLE -->
+    <!-- =============================================
+         SIDEBAR BUTTON
+    ============================================== -->
 
-                <span class="navbar-brand ms-3">
+    <button
+        type="button"
+        id="sidebarToggle"
+        class="btn btn-outline-primary"
+        aria-label="Toggle sidebar">
 
-                    Settings
+        <i class="bi bi-list"></i>
+
+    </button>
+
+
+    <!-- =============================================
+         PAGE TITLE
+    ============================================== -->
+
+    <span class="navbar-brand ms-3">
+
+        Dashboard
+
+    </span>
+
+
+    <!-- =================================================
+         RIGHT SIDE OF HEADER
+    ================================================== -->
+
+    <div class="navbar-right-section">
+
+
+        <!-- =============================================
+             NOTIFICATION
+        ============================================== -->
+
+        <div class="notification-wrapper">
+
+
+            <button
+                type="button"
+                class="notification-btn"
+                id="notificationBtn"
+                aria-label="Notifications">
+
+                <i class="bi bi-bell"></i>
+
+
+                <span
+                    class="notification-badge"
+                    id="notificationBadge">
+
+                    0
 
                 </span>
 
-
-                <!-- RIGHT SIDE -->
-
-                <div class="ms-auto d-flex align-items-center gap-3">
+            </button>
 
 
-                    <!-- NOTIFICATION -->
+            <!-- =========================================
+                 NOTIFICATION PANEL
+            ========================================== -->
 
-                    <a
-                        href="index.html"
-                        class="navbar-setting-icon"
-                        title="Notifications">
-
-                        <i class="bi bi-bell fs-4"></i>
-
-                    </a>
+            <div
+                class="notification-panel"
+                id="notificationPanel">
 
 
-                    <!-- SETTINGS -->
+                <!-- NOTIFICATION HEADER -->
 
-                    <a
-                        href="settings.html"
-                        class="navbar-setting-icon active-setting-icon"
-                        title="Settings">
-
-                        <i class="bi bi-gear fs-4"></i>
-
-                    </a>
+                <div class="notification-header">
 
 
-                    <!-- PROFILE -->
+                    <h6 class="mb-0">
 
-                    <a
-                        href="profile.html"
-                        class="navbar-setting-icon"
-                        title="Profile">
+                        Notifications
 
-                        <i class="bi bi-person-circle fs-3"></i>
+                    </h6>
 
-                    </a>
 
+                    <div class="d-flex align-items-center">
+
+
+                        <!-- MARK ALL READ -->
+
+                        <button
+                            type="button"
+                            class="btn btn-sm btn-link"
+                            id="markAllReadBtn">
+
+                            <i class="bi bi-check2-all"></i>
+
+                            Mark all as read
+
+                        </button>
+
+
+                        <!-- CLEAR ALL -->
+
+                        <button
+                            type="button"
+                            id="clearAllNotifications"
+                            class="btn btn-sm btn-link text-danger">
+
+                            <i class="bi bi-trash"></i>
+
+                            Clear All
+
+                        </button>
+
+
+                    </div>
 
                 </div>
 
-            </nav>
+
+                <!-- NOTIFICATION LIST -->
+
+                <div
+                    class="notification-list"
+                    id="notificationList">
+                </div>
+
+
+                <!-- EMPTY MESSAGE -->
+
+                <div
+                    class="notification-empty text-center p-4"
+                    id="notificationEmpty">
+
+                    <i
+                        class="bi bi-bell-slash fs-2 text-muted">
+                    </i>
+
+
+                    <p class="text-muted mb-0 mt-2">
+
+                        No new notifications
+
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =============================================
+             REQUEST CHAT
+        ============================================== -->
+
+        <a
+            href="extension-requests.html"
+            class="navbar-request-icon"
+            title="Extension Requests"
+            aria-label="Extension Requests">
+
+            <i class="bi bi-chat-dots"></i>
+
+
+            <span
+                class="request-count-badge"
+                id="globalExtensionRequestBadge">
+
+                0
+
+            </span>
+
+        </a>
+
+
+
+        <!-- =============================================
+             SETTINGS
+        ============================================== -->
+
+        <a
+            href="settings.html"
+            class="navbar-setting-icon"
+            title="Settings"
+            aria-label="Settings">
+
+            <i class="bi bi-gear"></i>
+
+        </a>
+
+
+
+        <!-- =============================================
+             PROFILE
+        ============================================== -->
+
+        <a
+            href="profile.html"
+            class="navbar-profile-icon"
+            title="Profile"
+            aria-label="Profile">
+
+            <i class="bi bi-person-circle"></i>
+
+        </a>
+
+
+    </div>
+
+
+</nav>
+
 
 
 

@@ -157,13 +157,16 @@
 <div class="main-content">
 
 
-<!-- =================================================
+   <!-- =================================================
      NAVBAR
 ================================================== -->
 
 <nav class="navbar bg-white shadow-sm px-3 mb-4">
 
-    <!-- SIDEBAR BUTTON -->
+
+    <!-- =============================================
+         SIDEBAR BUTTON
+    ============================================== -->
 
     <button
         type="button"
@@ -176,23 +179,30 @@
     </button>
 
 
-    <!-- PAGE TITLE -->
+    <!-- =============================================
+         PAGE TITLE
+    ============================================== -->
 
     <span class="navbar-brand ms-3">
-        Profile
+
+        Dashboard
+
     </span>
 
 
-    <!-- RIGHT SIDE OF HEADER -->
+    <!-- =================================================
+         RIGHT SIDE OF HEADER
+    ================================================== -->
 
-    <div class="ms-auto d-flex align-items-center gap-3">
+    <div class="navbar-right-section">
 
 
-        <!-- =========================================
+        <!-- =============================================
              NOTIFICATION
-        ========================================== -->
+        ============================================== -->
 
         <div class="notification-wrapper">
+
 
             <button
                 type="button"
@@ -200,7 +210,8 @@
                 id="notificationBtn"
                 aria-label="Notifications">
 
-                <i class="bi bi-bell fs-4"></i>
+                <i class="bi bi-bell"></i>
+
 
                 <span
                     class="notification-badge"
@@ -213,11 +224,16 @@
             </button>
 
 
-            <!-- NOTIFICATION PANEL -->
+            <!-- =========================================
+                 NOTIFICATION PANEL
+            ========================================== -->
 
             <div
                 class="notification-panel"
                 id="notificationPanel">
+
+
+                <!-- NOTIFICATION HEADER -->
 
                 <div class="notification-header">
 
@@ -232,7 +248,7 @@
                     <div class="d-flex align-items-center">
 
 
-                        <!-- MARK ALL AS READ -->
+                        <!-- MARK ALL READ -->
 
                         <button
                             type="button"
@@ -273,7 +289,7 @@
                 </div>
 
 
-                <!-- EMPTY NOTIFICATION -->
+                <!-- EMPTY MESSAGE -->
 
                 <div
                     class="notification-empty text-center p-4"
@@ -283,6 +299,7 @@
                         class="bi bi-bell-slash fs-2 text-muted">
                     </i>
 
+
                     <p class="text-muted mb-0 mt-2">
 
                         No new notifications
@@ -291,15 +308,41 @@
 
                 </div>
 
+
             </div>
 
         </div>
 
 
 
-        <!-- =========================================
+        <!-- =============================================
+             REQUEST CHAT
+        ============================================== -->
+
+        <a
+            href="extension-requests.html"
+            class="navbar-request-icon"
+            title="Extension Requests"
+            aria-label="Extension Requests">
+
+            <i class="bi bi-chat-dots"></i>
+
+
+            <span
+                class="request-count-badge"
+                id="globalExtensionRequestBadge">
+
+                0
+
+            </span>
+
+        </a>
+
+
+
+        <!-- =============================================
              SETTINGS
-        ========================================== -->
+        ============================================== -->
 
         <a
             href="settings.html"
@@ -307,15 +350,15 @@
             title="Settings"
             aria-label="Settings">
 
-            <i class="bi bi-gear fs-4"></i>
+            <i class="bi bi-gear"></i>
 
         </a>
 
 
 
-        <!-- =========================================
+        <!-- =============================================
              PROFILE
-        ========================================== -->
+        ============================================== -->
 
         <a
             href="profile.html"
@@ -323,14 +366,16 @@
             title="Profile"
             aria-label="Profile">
 
-            <i class="bi bi-person-circle fs-3"></i>
+            <i class="bi bi-person-circle"></i>
 
         </a>
 
 
     </div>
 
+
 </nav>
+
 
 
 

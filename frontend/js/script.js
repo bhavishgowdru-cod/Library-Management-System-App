@@ -7394,6 +7394,18 @@ function handleNotificationClick(notification) {
             break;
 
 
+        case "extension-request":
+
+        case "extension-approved":
+
+        case "extension-rejected":
+
+            window.location.href =
+                "extension-requests.html";
+
+            break;
+
+
         case "announcement":
 
             // Stay on current page
@@ -8414,3 +8426,367 @@ function checkCalendarAnnouncement() {
 
 }
 
+/* =========================================================
+   EXTENSION REQUEST
+   GLOBAL LMS INTEGRATION
+========================================================= */
+
+
+(function () {
+
+
+    const EXTENSION_REQUEST_KEY =
+        "libraryExtensionRequests";
+
+
+
+    /* =====================================================
+       >>> LOCAL STORAGE <<<
+       GET EXTENSION REQUESTS
+    ===================================================== */
+
+    function getGlobalExtensionRequests() {
+
+
+        try {
+
+
+            return JSON.parse(
+
+                localStorage.getItem(
+                    EXTENSION_REQUEST_KEY
+                )
+
+            ) || [];
+
+
+        } catch (
+            error
+        ) {
+
+
+            console.error(
+
+                "Extension request storage error:",
+
+                error
+
+            );
+
+
+            return [];
+
+        }
+
+    }
+
+
+
+    /* =====================================================
+       GET PENDING COUNT
+    ===================================================== */
+
+    function getPendingExtensionRequestCount() {
+
+
+        return getGlobalExtensionRequests()
+
+            .filter(
+
+                function (
+                    request
+                ) {
+
+
+                    return (
+
+                        request.status ===
+                        "Pending"
+
+                    );
+
+                }
+
+            )
+
+            .length;
+
+    }
+
+
+
+    /* =====================================================
+       ADD CSS AUTOMATICALLY
+    ===================================================== */
+
+    function addExtensionNavbarStyles() {
+
+
+        if (
+
+            document.getElementById(
+                "extensionNavbarStyles"
+            )
+
+        ) {
+
+            return;
+
+        }
+
+
+
+        const style =
+            document.createElement(
+                "style"
+            );
+
+
+
+        style.id =
+            "extensionNavbarStyles";
+
+
+
+        style.innerHTML = `
+
+
+            .navbar-request-icon {
+
+                position: relative;
+
+                display: inline-flex;
+
+                align-items: center;
+
+                justify-content: center;
+
+                color: #212529;
+
+                text-decoration: none;
+
+                cursor: pointer;
+
+                transition:
+                    color 0.2s ease;
+
+            }
+
+
+            .navbar-request-icon:hover {
+
+                color: #0d6efd;
+
+            }
+
+
+            .request-count-badge {
+
+                position: absolute;
+
+                top: -7px;
+
+                right: -9px;
+
+                display: none;
+
+                min-width: 18px;
+
+                height: 18px;
+
+                padding: 0 5px;
+
+                align-items: center;
+
+                justify-content: center;
+
+                background-color: #dc3545;
+
+                color: #ffffff !important;
+
+                border:
+                    2px solid
+                    #ffffff;
+
+                border-radius: 50px;
+
+                font-size: 10px;
+
+                font-weight: 700;
+
+            }
+
+
+            .request-count-badge.show {
+
+                display: inline-flex;
+
+            }
+
+
+            body.dark-mode
+            .navbar-request-icon {
+
+                color:
+                    #ffffff !important;
+
+            }
+
+
+            body.dark-mode
+            .navbar-request-icon:hover {
+
+                color:
+                    #60a5fa !important;
+
+            }
+
+
+            body.dark-mode
+            .request-count-badge {
+
+                border-color:
+                    #1e293b;
+
+            }
+
+
+        `;
+
+
+
+        document.head.appendChild(
+            style
+        );
+
+    }
+
+
+    /* =====================================================
+       UPDATE BADGE
+    ===================================================== */
+
+    function updateExtensionRequestBadge() {
+
+
+        const badge =
+
+            document.getElementById(
+                "globalExtensionRequestBadge"
+            ) ||
+
+            document.getElementById(
+                "requestNavbarBadge"
+            );
+
+
+
+        if (
+            !badge
+        ) {
+
+            return;
+
+        }
+
+
+
+        const count =
+            getPendingExtensionRequestCount();
+
+
+
+        badge.textContent =
+
+            count > 99
+
+                ? "99+"
+
+                : count;
+
+
+
+        badge.classList.toggle(
+
+            "show",
+
+            count > 0
+
+        );
+
+    }
+
+
+
+    /* =====================================================
+       PAGE LOAD
+    ===================================================== */
+
+    document.addEventListener(
+
+        "DOMContentLoaded",
+
+        function () {
+
+
+            addExtensionNavbarStyles();
+
+
+            updateExtensionRequestBadge();
+
+        }
+
+    );
+
+
+
+    /* =====================================================
+       SAME PAGE CHANGE
+    ===================================================== */
+
+    window.addEventListener(
+
+        "libraryDataChanged",
+
+        function () {
+
+
+            updateExtensionRequestBadge();
+
+        }
+
+    );
+
+
+
+    /* =====================================================
+       OTHER TAB CHANGE
+    ===================================================== */
+
+    window.addEventListener(
+
+        "storage",
+
+        function (
+            event
+        ) {
+
+
+            if (
+
+                event.key ===
+                EXTENSION_REQUEST_KEY
+
+            ) {
+
+
+                updateExtensionRequestBadge();
+
+            }
+
+        }
+
+    );
+
+
+})();
