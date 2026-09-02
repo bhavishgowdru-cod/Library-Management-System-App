@@ -415,37 +415,6 @@ body {
     position: relative;
 }
 
-.notification-btn {
-    width: 44px;
-    height: 44px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    position: relative;
-
-    padding: 0;
-    border: none;
-    border-radius: 50%;
-
-    background: linear-gradient(
-        135deg,
-        #eff6ff,
-        #dbeafe
-    );
-
-    color: #2563eb;
-
-    font-size: 21px;
-    cursor: pointer;
-
-    box-shadow:
-        0 4px 12px rgba(37, 99, 235, 0.18);
-
-    transition: all 0.25s ease;
-}
-
 .notification-panel {
     position: absolute;
     top: 50px;
@@ -486,41 +455,12 @@ body {
     object-fit: cover;
 }
 
-.navbar-setting-icon {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #212529;
-    text-decoration: none;
-    border-radius: 50%;
-    font-size: 20px;
-    cursor: pointer;
-    transition: background-color 0.2s ease,
-        color 0.2s ease,
-        transform 0.2s ease;
-}
-
 .navbar-setting-icon:hover {
     color: #0d6efd;
     background-color: #e7f1ff;
     transform: rotate(25deg);
 }
 
-.navbar-profile-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #212529;
-    text-decoration: none;
-    cursor: pointer;
-    transition: color 0.2s ease;
-}
-
-.navbar-profile-icon:hover {
-    color: #0d6efd;
-}
 
 @media (max-width: 576px) {
     .navbar-setting-icon {
@@ -1930,48 +1870,326 @@ body.dark-mode #addMemberForm label {
 }
 
 /* =====================================================
-   REMOVE SETTINGS ICON CIRCLE ON ALL PAGES
+   NAVBAR RIGHT SIDE - CLEAN FINAL CODE
 ===================================================== */
 
+.navbar-right-section {
+    margin-left: auto !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+
+    gap: 12px !important;
+
+    flex-shrink: 0;
+}
+
+
+/* =====================================================
+   SAME SIZE FOR ALL FOUR NAVBAR ITEMS
+===================================================== */
+
+.navbar-right-section > .notification-wrapper,
+.navbar-right-section > .navbar-request-icon,
+.navbar-right-section > .navbar-setting-icon,
+.navbar-right-section > .navbar-profile-icon {
+
+    position: relative;
+
+    width: 40px;
+
+    height: 40px;
+
+    min-width: 40px;
+
+    flex: 0 0 40px;
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+}
+
+
+/* =====================================================
+   NOTIFICATION WRAPPER
+===================================================== */
+
+.navbar-right-section > .notification-wrapper {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+}
+
+
+/* =====================================================
+   NOTIFICATION BUTTON
+===================================================== */
+
+.navbar-right-section
+> .notification-wrapper
+> .notification-btn {
+
+    position: relative;
+
+    width: 40px !important;
+
+    height: 40px !important;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+    background: transparent !important;
+
+    border: none !important;
+
+    box-shadow: none !important;
+
+    border-radius: 8px;
+
+    color: #212529;
+
+}
+
+
+/* =====================================================
+   REQUEST / SETTINGS / PROFILE
+===================================================== */
+
+.navbar-right-section
+> .navbar-request-icon,
+
+.navbar-right-section
+> .navbar-setting-icon,
+
+.navbar-right-section
+> .navbar-profile-icon {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+    background: transparent !important;
+
+    border: none !important;
+
+    box-shadow: none !important;
+
+    border-radius: 8px;
+
+    color: #212529;
+
+    text-decoration: none;
+
+    cursor: pointer;
+
+}
+
+
+/* =====================================================
+   SAME ICON SIZE
+===================================================== */
+
+.navbar-right-section
+> .notification-wrapper
+> .notification-btn
+> i,
+
+.navbar-right-section
+> .navbar-request-icon
+> i,
+
+.navbar-right-section
+> .navbar-setting-icon
+> i,
+
+.navbar-right-section
+> .navbar-profile-icon
+> i {
+
+    font-size: 22px !important;
+
+    line-height: 1;
+
+    margin: 0;
+
+    padding: 0;
+
+}
+
+
+/* =====================================================
+   HOVER
+===================================================== */
+
+.navbar-right-section
+> .notification-wrapper
+> .notification-btn:hover,
+
+.navbar-right-section
+> .navbar-request-icon:hover,
+
+.navbar-right-section
+> .navbar-setting-icon:hover,
+
+.navbar-right-section
+> .navbar-profile-icon:hover {
+
+    color: #0d6efd !important;
+
+    background: #f1f5f9 !important;
+
+}
+
+
+/* DON'T ROTATE SETTINGS ICON */
+
+.navbar-right-section
+> .navbar-setting-icon:hover {
+
+    transform: none !important;
+
+}
+
+
+/* =====================================================
+   REQUEST BADGE
+===================================================== */
+
+.request-count-badge {
+
+    position: absolute;
+
+    top: -2px;
+
+    right: -2px;
+
+    min-width: 17px;
+
+    height: 17px;
+
+    padding: 0 4px;
+
+    display: none;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background-color: #dc3545;
+
+    color: #ffffff !important;
+
+    border-radius: 50px;
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    line-height: 1;
+
+}
+
+
+.request-count-badge.show {
+
+    display: flex;
+
+}
+
+
+/* =====================================================
+   NOTIFICATION BADGE
+===================================================== */
+
+.navbar-right-section .notification-badge {
+
+    top: -2px !important;
+
+    right: -2px !important;
+
+}
+
+
+/* =====================================================
+   NOTIFICATION PANEL
+===================================================== */
+
+.navbar-right-section .notification-panel {
+
+    width: 360px;
+
+}
+
+
+/* =====================================================
+   DARK MODE
+===================================================== */
+
+body.dark-mode
+.navbar-right-section
+.notification-btn,
+
+body.dark-mode
+.navbar-right-section
+.navbar-request-icon,
+
+body.dark-mode
+.navbar-right-section
 .navbar-setting-icon,
+
+body.dark-mode
+.navbar-right-section
+.navbar-profile-icon {
+
+    color: #ffffff !important;
+
+    background: transparent !important;
+
+}
+
+
+body.dark-mode
+.navbar-right-section
+.notification-btn:hover,
+
+body.dark-mode
+.navbar-right-section
+.navbar-request-icon:hover,
+
+body.dark-mode
+.navbar-right-section
 .navbar-setting-icon:hover,
-.navbar-setting-icon:focus,
-.navbar-setting-icon:active,
-.navbar-setting-icon:focus-visible,
-.navbar-setting-icon.active-setting-icon {
 
-    background: transparent !important;
-    background-color: transparent !important;
+body.dark-mode
+.navbar-right-section
+.navbar-profile-icon:hover {
 
-    box-shadow: none !important;
-    outline: none !important;
-    border: none !important;
+    color: #60a5fa !important;
+
+    background: rgba(
+        96,
+        165,
+        250,
+        0.10
+    ) !important;
+
 }
-
-
-/* Dark Mode */
-
-body.dark-mode .navbar-setting-icon,
-body.dark-mode .navbar-setting-icon:hover,
-body.dark-mode .navbar-setting-icon:focus,
-body.dark-mode .navbar-setting-icon:active,
-body.dark-mode .navbar-setting-icon:focus-visible,
-body.dark-mode .navbar-setting-icon.active-setting-icon {
-
-    background: transparent !important;
-    background-color: transparent !important;
-
-    box-shadow: none !important;
-    outline: none !important;
-    border: none !important;
-
-    color: #e9ebec !important;
-}
-
-
-/* Keep actual gear icon visible */
-
-body.dark-mode .navbar-setting-icon i {
-    color: #f2f4f5 !important;
-}
-

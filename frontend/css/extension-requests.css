@@ -1,0 +1,975 @@
+/* =========================================================
+   LMS
+   RETURN DATE EXTENSION REQUEST
+========================================================= */
+
+
+.extension-page {
+
+    padding: 10px 24px 35px;
+
+}
+
+
+/* =========================================================
+   PAGE HEADER
+========================================================= */
+
+.extension-page-heading {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: flex-end;
+
+    gap: 20px;
+
+    margin-bottom: 25px;
+
+}
+
+
+.extension-eyebrow {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    margin-bottom: 8px;
+
+    color: #0d6efd;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.05em;
+
+}
+
+
+.role-box {
+
+    width: 220px;
+
+}
+
+
+
+/* =========================================================
+   STAT CARDS
+========================================================= */
+
+.extension-stat-card {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+    min-height: 110px;
+
+    padding: 18px;
+
+    background-color: #ffffff;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 16px;
+
+    box-shadow:
+
+        0 5px 18px
+
+        rgba(
+            15,
+            23,
+            42,
+            0.06
+        );
+
+}
+
+
+.extension-stat-card span {
+
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #6c757d;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+}
+
+
+.extension-stat-card strong {
+
+    color: #172033;
+
+    font-size: 28px;
+
+}
+
+
+
+.extension-stat-icon {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 55px;
+
+    height: 55px;
+
+    flex-shrink: 0;
+
+    border-radius: 15px;
+
+    font-size: 24px;
+
+}
+
+
+
+/* PENDING */
+
+.extension-stat-icon.pending {
+
+    background-color: #fff3cd;
+
+    color: #9a6700;
+
+}
+
+
+
+/* APPROVED */
+
+.extension-stat-icon.approved {
+
+    background-color: #d1e7dd;
+
+    color: #157347;
+
+}
+
+
+
+/* REJECTED */
+
+.extension-stat-icon.rejected {
+
+    background-color: #f8d7da;
+
+    color: #b02a37;
+
+}
+
+
+
+/* TOTAL */
+
+.extension-stat-icon.total {
+
+    background-color: #cfe2ff;
+
+    color: #0a58ca;
+
+}
+
+
+
+/* =========================================================
+   CARD
+========================================================= */
+
+.extension-card {
+
+    overflow: visible;
+
+    border:
+
+        1px solid
+
+        #e7ebf0;
+
+    border-radius: 16px;
+
+}
+
+
+.extension-card .card-header {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    min-height: 72px;
+
+    padding: 16px 20px;
+
+    border-bottom:
+
+        1px solid
+
+        #edf0f4;
+
+    border-radius:
+
+        16px 16px 0 0 !important;
+
+}
+
+
+
+/* =========================================================
+   BUTTON
+========================================================= */
+
+.extension-submit-btn {
+
+    min-width: 220px;
+
+}
+
+
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.extension-table thead th {
+
+    padding: 14px 16px;
+
+    background-color: #f8fafc;
+
+    color: #536070;
+
+    font-size: 13px;
+
+    white-space: nowrap;
+
+    border-bottom-width: 1px;
+
+}
+
+
+.extension-table tbody td {
+
+    padding: 15px 16px;
+
+    vertical-align: middle;
+
+}
+
+
+.request-reason {
+
+    max-width: 300px;
+
+    white-space: normal;
+
+}
+
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.request-status {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    padding: 6px 11px;
+
+    border-radius: 50px;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+}
+
+
+.request-status.pending {
+
+    color: #7a5700;
+
+    background-color: #fff3cd;
+
+}
+
+
+.request-status.approved {
+
+    color: #146c43;
+
+    background-color: #d1e7dd;
+
+}
+
+
+.request-status.rejected {
+
+    color: #b02a37;
+
+    background-color: #f8d7da;
+
+}
+
+
+
+/* =========================================================
+   ADMIN
+========================================================= */
+
+.admin-header {
+
+    gap: 20px;
+
+}
+
+
+.admin-filter {
+
+    width: 190px;
+
+}
+
+
+.admin-request-list {
+
+    display: grid;
+
+    gap: 15px;
+
+}
+
+
+.admin-request-card {
+
+    padding: 18px;
+
+    background-color: #ffffff;
+
+    border:
+
+        1px solid
+
+        #e4e8ee;
+
+    border-radius: 14px;
+
+    transition:
+
+        transform 0.2s ease,
+
+        box-shadow 0.2s ease;
+
+}
+
+
+.admin-request-card:hover {
+
+    transform:
+
+        translateY(-2px);
+
+    box-shadow:
+
+        0 8px 20px
+
+        rgba(
+            15,
+            23,
+            42,
+            0.08
+        );
+
+}
+
+
+.admin-request-top {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-bottom: 15px;
+
+}
+
+
+.admin-request-book {
+
+    margin-bottom: 4px;
+
+    font-size: 18px;
+
+    font-weight: 700;
+
+}
+
+
+.admin-request-member {
+
+    margin: 0;
+
+    color: #6c757d;
+
+    font-size: 13px;
+
+}
+
+
+
+/* =========================================================
+   ADMIN DETAILS
+========================================================= */
+
+.admin-request-grid {
+
+    display: grid;
+
+    grid-template-columns:
+
+        repeat(
+            3,
+            minmax(0, 1fr)
+        );
+
+    gap: 12px;
+
+    margin-bottom: 15px;
+
+}
+
+
+.request-detail {
+
+    padding: 12px;
+
+    background-color: #f8fafc;
+
+    border-radius: 10px;
+
+}
+
+
+.request-detail small {
+
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: #718096;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+}
+
+
+.request-detail strong {
+
+    color: #263142;
+
+    font-size: 14px;
+
+}
+
+
+
+/* =========================================================
+   REASON
+========================================================= */
+
+.admin-request-reason {
+
+    margin-bottom: 15px;
+
+    padding: 12px 14px;
+
+    background-color: #f8fafc;
+
+    border-left:
+
+        4px solid
+
+        #0d6efd;
+
+    border-radius:
+
+        0 10px 10px 0;
+
+}
+
+
+
+/* =========================================================
+   ADMIN BUTTONS
+========================================================= */
+
+.admin-actions {
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 10px;
+
+}
+
+
+
+/* =========================================================
+   DECISION MODAL
+========================================================= */
+
+.decision-summary {
+
+    margin-bottom: 18px;
+
+    padding: 13px;
+
+    background-color: #f8fafc;
+
+    border-radius: 10px;
+
+}
+
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.empty-request-state {
+
+    padding: 50px 20px;
+
+    color: #6c757d;
+
+    text-align: center;
+
+}
+
+
+.empty-request-state i {
+
+    display: block;
+
+    margin-bottom: 12px;
+
+    color: #a7b0bc;
+
+    font-size: 42px;
+
+}
+
+
+
+/* =========================================================
+   NAVBAR REQUEST ICON
+========================================================= */
+
+.navbar-request-icon {
+
+    position: relative;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    color: #212529;
+
+    text-decoration: none;
+
+    cursor: pointer;
+
+    transition:
+
+        color 0.2s ease;
+
+}
+
+
+.navbar-request-icon:hover {
+
+    color: #0d6efd;
+
+}
+
+
+.navbar-request-icon.active {
+
+    color: #0d6efd;
+
+}
+
+
+
+/* =========================================================
+   REQUEST BADGE
+========================================================= */
+
+.request-count-badge {
+
+    position: absolute;
+
+    top: -7px;
+
+    right: -9px;
+
+    display: none;
+
+    min-width: 18px;
+
+    height: 18px;
+
+    padding: 0 5px;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background-color: #dc3545;
+
+    color: #ffffff !important;
+
+    border:
+
+        2px solid
+
+        #ffffff;
+
+    border-radius: 50px;
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+}
+
+
+.request-count-badge.show {
+
+    display: inline-flex;
+
+}
+
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+.extension-toast {
+
+    position: fixed;
+
+    right: 25px;
+
+    bottom: 25px;
+
+    z-index: 2000;
+
+    max-width: 380px;
+
+    padding: 14px 18px;
+
+    background-color: #1f2937;
+
+    color: #ffffff;
+
+    border-radius: 10px;
+
+    box-shadow:
+
+        0 14px 30px
+
+        rgba(
+            0,
+            0,
+            0,
+            0.25
+        );
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    transform:
+
+        translateY(15px);
+
+    transition:
+
+        all 0.25s ease;
+
+}
+
+
+.extension-toast.show {
+
+    opacity: 1;
+
+    transform:
+
+        translateY(0);
+
+}
+
+
+
+/* =========================================================
+   DARK MODE
+========================================================= */
+
+body.dark-mode
+.extension-card,
+
+body.dark-mode
+.extension-stat-card,
+
+body.dark-mode
+.admin-request-card {
+
+    background-color: #1e293b;
+
+    color: #f8fafc;
+
+    border-color: #334155;
+
+}
+
+
+body.dark-mode
+.extension-card
+.card-header {
+
+    background-color:
+
+        #1e293b !important;
+
+    border-color: #334155;
+
+}
+
+
+body.dark-mode
+.extension-stat-card strong {
+
+    color: #ffffff;
+
+}
+
+
+body.dark-mode
+.admin-request-book {
+
+    color: #ffffff;
+
+}
+
+
+body.dark-mode
+.request-detail {
+
+    background-color: #172033;
+
+}
+
+
+body.dark-mode
+.request-detail strong {
+
+    color: #ffffff;
+
+}
+
+
+body.dark-mode
+.admin-request-reason {
+
+    background-color: #172033;
+
+}
+
+
+body.dark-mode
+.decision-summary {
+
+    background-color: #172033;
+
+}
+
+
+body.dark-mode
+.extension-table thead th {
+
+    background-color: #172033;
+
+    color: #cbd5e1;
+
+    border-color: #334155;
+
+}
+
+
+body.dark-mode
+.extension-table tbody td {
+
+    background-color: #1e293b;
+
+    color: #f8fafc;
+
+    border-color: #334155;
+
+}
+
+
+body.dark-mode
+.navbar-request-icon {
+
+    color: #ffffff;
+
+}
+
+
+body.dark-mode
+.navbar-request-icon:hover {
+
+    color: #60a5fa;
+
+}
+
+
+body.dark-mode
+.request-count-badge {
+
+    border-color: #1e293b;
+
+}
+
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media
+(max-width: 992px) {
+
+    .admin-request-grid {
+
+        grid-template-columns:
+
+            1fr 1fr;
+
+    }
+
+}
+
+
+
+@media
+(max-width: 768px) {
+
+
+    .extension-page {
+
+        padding:
+
+            10px 14px 25px;
+
+    }
+
+
+    .extension-page-heading {
+
+        flex-direction: column;
+
+        align-items: stretch;
+
+    }
+
+
+    .role-box {
+
+        width: 100%;
+
+    }
+
+
+    .admin-filter {
+
+        width: 100%;
+
+    }
+
+
+    .admin-header {
+
+        flex-direction: column;
+
+        align-items: stretch !important;
+
+    }
+
+
+    .admin-request-top {
+
+        flex-direction: column;
+
+    }
+
+
+    .admin-request-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .admin-actions {
+
+        flex-direction: column;
+
+    }
+
+
+    .admin-actions button {
+
+        width: 100%;
+
+    }
+
+
+}

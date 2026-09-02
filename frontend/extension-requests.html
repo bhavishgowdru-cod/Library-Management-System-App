@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>
+        LMS - Return Date Extension Requests
+    </title>
+
+
+    <!-- ==========================================
+         BOOTSTRAP
+    =========================================== -->
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+
+    <!-- ==========================================
+         BOOTSTRAP ICONS
+    =========================================== -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+
+    <!-- ==========================================
+         EXISTING LMS CSS
+    =========================================== -->
+
+    <link
+        rel="stylesheet"
+        href="css/style.css">
+
+
+    <!-- ==========================================
+         EXTENSION REQUEST CSS
+    =========================================== -->
+
+    <link
+        rel="stylesheet"
+        href="css/extension-requests.css">
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     SIDEBAR
+===================================================== -->
+
+<aside
+    id="sidebar"
+    class="sidebar">
+
+    <div class="sidebar-header">
+
+        <i class="bi bi-book"></i>
+
+        <span>
+            Library Management System
+        </span>
+
+    </div>
+
+
+    <ul class="sidebar-menu">
+
+
+        <!-- DASHBOARD -->
+
+        <li>
+
+            <a href="index.html">
+
+                <i class="bi bi-speedometer2"></i>
+
+                Dashboard
+
+            </a>
+
+        </li>
+
+
+        <!-- BOOKS -->
+
+        <li>
+
+            <a href="books.html">
+
+                <i class="bi bi-book-half"></i>
+
+                Books
+
+            </a>
+
+        </li>
+
+
+        <!-- MEMBERS -->
+
+        <li>
+
+            <a href="members.html">
+
+                <i class="bi bi-people"></i>
+
+                Members
+
+            </a>
+
+        </li>
+
+
+        <!-- ISSUE / RETURN -->
+
+        <li>
+
+            <a href="issue-return.html">
+
+                <i class="bi bi-arrow-left-right"></i>
+
+                Issue / Return
+
+            </a>
+
+        </li>
+
+
+        <!-- PROFILE -->
+
+        <li>
+
+            <a href="profile.html">
+
+                <i class="bi bi-person-circle"></i>
+
+                Profile
+
+            </a>
+
+        </li>
+
+
+    </ul>
+
+</aside>
+
+
+
+<!-- =====================================================
+     MAIN CONTENT
+===================================================== -->
+
+<div class="main-content">
+
+
+    <!-- =================================================
+     NAVBAR
+================================================== -->
+
+<nav class="navbar bg-white shadow-sm px-3 mb-4">
+
+
+    <!-- =============================================
+         SIDEBAR BUTTON
+    ============================================== -->
+
+    <button
+        type="button"
+        id="sidebarToggle"
+        class="btn btn-outline-primary"
+        aria-label="Toggle sidebar">
+
+        <i class="bi bi-list"></i>
+
+    </button>
+
+
+    <!-- =============================================
+         PAGE TITLE
+    ============================================== -->
+
+    <span class="navbar-brand ms-3">
+
+        Dashboard
+
+    </span>
+
+
+    <!-- =================================================
+         RIGHT SIDE OF HEADER
+    ================================================== -->
+
+    <div class="navbar-right-section">
+
+
+        <!-- =============================================
+             NOTIFICATION
+        ============================================== -->
+
+        <div class="notification-wrapper">
+
+
+            <button
+                type="button"
+                class="notification-btn"
+                id="notificationBtn"
+                aria-label="Notifications">
+
+                <i class="bi bi-bell"></i>
+
+
+                <span
+                    class="notification-badge"
+                    id="notificationBadge">
+
+                    0
+
+                </span>
+
+            </button>
+
+
+            <!-- =========================================
+                 NOTIFICATION PANEL
+            ========================================== -->
+
+            <div
+                class="notification-panel"
+                id="notificationPanel">
+
+
+                <!-- NOTIFICATION HEADER -->
+
+                <div class="notification-header">
+
+
+                    <h6 class="mb-0">
+
+                        Notifications
+
+                    </h6>
+
+
+                    <div class="d-flex align-items-center">
+
+
+                        <!-- MARK ALL READ -->
+
+                        <button
+                            type="button"
+                            class="btn btn-sm btn-link"
+                            id="markAllReadBtn">
+
+                            <i class="bi bi-check2-all"></i>
+
+                            Mark all as read
+
+                        </button>
+
+
+                        <!-- CLEAR ALL -->
+
+                        <button
+                            type="button"
+                            id="clearAllNotifications"
+                            class="btn btn-sm btn-link text-danger">
+
+                            <i class="bi bi-trash"></i>
+
+                            Clear All
+
+                        </button>
+
+
+                    </div>
+
+                </div>
+
+
+                <!-- NOTIFICATION LIST -->
+
+                <div
+                    class="notification-list"
+                    id="notificationList">
+                </div>
+
+
+                <!-- EMPTY MESSAGE -->
+
+                <div
+                    class="notification-empty text-center p-4"
+                    id="notificationEmpty">
+
+                    <i
+                        class="bi bi-bell-slash fs-2 text-muted">
+                    </i>
+
+
+                    <p class="text-muted mb-0 mt-2">
+
+                        No new notifications
+
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =============================================
+             REQUEST CHAT
+        ============================================== -->
+
+        <a
+            href="extension-requests.html"
+            class="navbar-request-icon"
+            title="Extension Requests"
+            aria-label="Extension Requests">
+
+            <i class="bi bi-chat-dots"></i>
+
+
+            <span
+                class="request-count-badge"
+                id="globalExtensionRequestBadge">
+
+                0
+
+            </span>
+
+        </a>
+
+
+
+        <!-- =============================================
+             SETTINGS
+        ============================================== -->
+
+        <a
+            href="settings.html"
+            class="navbar-setting-icon"
+            title="Settings"
+            aria-label="Settings">
+
+            <i class="bi bi-gear"></i>
+
+        </a>
+
+
+
+        <!-- =============================================
+             PROFILE
+        ============================================== -->
+
+        <a
+            href="profile.html"
+            class="navbar-profile-icon"
+            title="Profile"
+            aria-label="Profile">
+
+            <i class="bi bi-person-circle"></i>
+
+        </a>
+
+
+    </div>
+
+
+</nav>
+
+
+
+
+    <!-- =================================================
+         PAGE CONTENT
+    ================================================== -->
+
+    <main
+        class="container-fluid extension-page">
+
+
+        <!-- PAGE HEADER -->
+
+        <div class="extension-page-heading">
+
+
+            <div>
+
+                <span class="extension-eyebrow">
+
+                    <i class="bi bi-calendar2-week me-1"></i>
+
+                    Borrowing Support
+
+                </span>
+
+
+                <h2 class="mb-2">
+
+                    Book Return Date Extension
+
+                </h2>
+
+
+                <p class="text-muted mb-0">
+
+                    Borrowers can request more time and
+                    administrators can approve or reject requests.
+
+                </p>
+
+            </div>
+
+
+
+            <!-- DEMO ROLE -->
+
+            <div class="role-box">
+
+                <label
+                    for="extensionViewMode"
+                    class="form-label">
+
+                    View As
+
+                </label>
+
+
+                <select
+                    id="extensionViewMode"
+                    class="form-select">
+
+                    <option value="borrower">
+
+                        Borrower
+
+                    </option>
+
+
+                    <option value="admin">
+
+                        Administrator
+
+                    </option>
+
+                </select>
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- =================================================
+             STATISTICS
+        ================================================== -->
+
+        <div class="row g-3 mb-4">
+
+
+            <!-- PENDING -->
+
+            <div class="col-sm-6 col-xl-3">
+
+                <div class="extension-stat-card">
+
+
+                    <div
+                        class="extension-stat-icon pending">
+
+                        <i class="bi bi-hourglass-split"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+
+                            Pending
+
+                        </span>
+
+
+                        <strong
+                            id="pendingRequestCount">
+
+                            0
+
+                        </strong>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+
+            <!-- APPROVED -->
+
+            <div class="col-sm-6 col-xl-3">
+
+                <div class="extension-stat-card">
+
+
+                    <div
+                        class="extension-stat-icon approved">
+
+                        <i class="bi bi-check2-circle"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+
+                            Approved
+
+                        </span>
+
+
+                        <strong
+                            id="approvedRequestCount">
+
+                            0
+
+                        </strong>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+
+            <!-- REJECTED -->
+
+            <div class="col-sm-6 col-xl-3">
+
+                <div class="extension-stat-card">
+
+
+                    <div
+                        class="extension-stat-icon rejected">
+
+                        <i class="bi bi-x-circle"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+
+                            Rejected
+
+                        </span>
+
+
+                        <strong
+                            id="rejectedRequestCount">
+
+                            0
+
+                        </strong>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+
+            <!-- TOTAL -->
+
+            <div class="col-sm-6 col-xl-3">
+
+                <div class="extension-stat-card">
+
+
+                    <div
+                        class="extension-stat-icon total">
+
+                        <i class="bi bi-chat-square-text"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+
+                            Total Requests
+
+                        </span>
+
+
+                        <strong
+                            id="totalRequestCount">
+
+                            0
+
+                        </strong>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- =================================================
+             BORROWER SECTION
+        ================================================== -->
+
+        <section id="borrowerPanel">
+
+
+            <!-- REQUEST FORM -->
+
+            <div
+                class="card extension-card shadow-sm mb-4">
+
+
+                <div class="card-header bg-white">
+
+                    <div>
+
+                        <h5 class="mb-1">
+
+                            <i class="bi bi-send me-2"></i>
+
+                            Request an Extension
+
+                        </h5>
+
+
+                        <small class="text-muted">
+
+                            Select one of your currently issued books.
+
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="card-body">
+
+
+                    <form id="extensionRequestForm">
+
+
+                        <div class="row g-3">
+
+
+                            <!-- ISSUED BOOK -->
+
+                            <div class="col-md-6">
+
+                                <label
+                                    for="requestIssue"
+                                    class="form-label">
+
+                                    Issued Book
+
+                                </label>
+
+
+                                <select
+                                    id="requestIssue"
+                                    class="form-select"
+                                    required>
+
+                                    <option value="">
+
+                                        Select issued book
+
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+
+                            <!-- CURRENT RETURN DATE -->
+
+                            <div class="col-md-3">
+
+                                <label
+                                    for="currentReturnDate"
+                                    class="form-label">
+
+                                    Current Return Date
+
+                                </label>
+
+
+                                <input
+                                    type="date"
+                                    id="currentReturnDate"
+                                    class="form-control"
+                                    readonly>
+
+                            </div>
+
+
+
+                            <!-- REQUESTED DATE -->
+
+                            <div class="col-md-3">
+
+                                <label
+                                    for="requestedReturnDate"
+                                    class="form-label">
+
+                                    Requested Return Date
+
+                                </label>
+
+
+                                <input
+                                    type="date"
+                                    id="requestedReturnDate"
+                                    class="form-control"
+                                    required>
+
+                            </div>
+
+
+
+                            <!-- REASON -->
+
+                            <div class="col-12">
+
+                                <label
+                                    for="requestReason"
+                                    class="form-label">
+
+                                    Reason for Extension
+
+                                </label>
+
+
+                                <textarea
+                                    id="requestReason"
+                                    class="form-control"
+                                    rows="3"
+                                    maxlength="300"
+                                    placeholder="Example: I need a few more days to complete my reference work."
+                                    required>
+                                </textarea>
+
+
+                                <div class="form-text">
+
+                                    Maximum 300 characters.
+
+                                </div>
+
+                            </div>
+
+
+
+                            <!-- SUBMIT -->
+
+                            <div
+                                class="col-12 d-flex justify-content-end">
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-primary extension-submit-btn">
+
+                                    <i class="bi bi-send me-2"></i>
+
+                                    Send Extension Request
+
+                                </button>
+
+                            </div>
+
+
+                        </div>
+
+                    </form>
+
+
+                </div>
+
+            </div>
+
+
+
+            <!-- BORROWER REQUEST HISTORY -->
+
+            <div
+                class="card extension-card shadow-sm">
+
+
+                <div class="card-header bg-white">
+
+                    <h5 class="mb-0">
+
+                        <i class="bi bi-clock-history me-2"></i>
+
+                        My Extension Requests
+
+                    </h5>
+
+                </div>
+
+
+
+                <div class="card-body p-0">
+
+
+                    <div class="table-responsive">
+
+
+                        <table
+                            class="table align-middle mb-0 extension-table">
+
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>Book</th>
+
+                                    <th>Current Date</th>
+
+                                    <th>Requested Date</th>
+
+                                    <th>Reason</th>
+
+                                    <th>Status</th>
+
+                                    <th>Admin Message</th>
+
+                                </tr>
+
+                            </thead>
+
+
+
+                            <tbody
+                                id="borrowerRequestTableBody">
+                            </tbody>
+
+
+                        </table>
+
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             ADMIN SECTION
+        ================================================== -->
+
+        <section
+            id="adminPanel"
+            class="d-none">
+
+
+            <div
+                class="card extension-card shadow-sm">
+
+
+                <div
+                    class="card-header bg-white admin-header">
+
+
+                    <div>
+
+                        <h5 class="mb-1">
+
+                            <i class="bi bi-shield-check me-2"></i>
+
+                            Administrator Request Center
+
+                        </h5>
+
+
+                        <small class="text-muted">
+
+                            Approving a request updates
+                            the actual issue return date.
+
+                        </small>
+
+                    </div>
+
+
+
+                    <select
+                        id="adminStatusFilter"
+                        class="form-select admin-filter">
+
+                        <option value="all">
+
+                            All Requests
+
+                        </option>
+
+
+                        <option value="Pending">
+
+                            Pending
+
+                        </option>
+
+
+                        <option value="Approved">
+
+                            Approved
+
+                        </option>
+
+
+                        <option value="Rejected">
+
+                            Rejected
+
+                        </option>
+
+                    </select>
+
+
+                </div>
+
+
+
+                <div class="card-body">
+
+
+                    <div
+                        id="adminRequestList"
+                        class="admin-request-list">
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+    </main>
+
+</div>
+
+
+
+<!-- =====================================================
+     ADMIN APPROVE / REJECT MODAL
+===================================================== -->
+
+<div
+    class="modal fade"
+    id="requestDecisionModal"
+    tabindex="-1">
+
+
+    <div
+        class="modal-dialog modal-dialog-centered">
+
+
+        <div class="modal-content">
+
+
+            <div class="modal-header">
+
+
+                <h5
+                    class="modal-title"
+                    id="decisionModalTitle">
+
+                    Process Request
+
+                </h5>
+
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal">
+                </button>
+
+
+            </div>
+
+
+
+            <div class="modal-body">
+
+
+                <div
+                    id="decisionRequestSummary"
+                    class="decision-summary">
+
+                </div>
+
+
+
+                <!-- APPROVED DATE -->
+
+                <div
+                    id="approvedDateGroup"
+                    class="mb-3">
+
+
+                    <label
+                        for="approvedReturnDate"
+                        class="form-label">
+
+                        Approved Return Date
+
+                    </label>
+
+
+                    <input
+                        type="date"
+                        id="approvedReturnDate"
+                        class="form-control">
+
+
+                </div>
+
+
+
+                <!-- ADMIN MESSAGE -->
+
+                <div>
+
+
+                    <label
+                        for="adminMessage"
+                        class="form-label">
+
+                        Message to Borrower
+
+                    </label>
+
+
+                    <textarea
+                        id="adminMessage"
+                        class="form-control"
+                        rows="3"
+                        maxlength="300"
+                        placeholder="Add a message">
+                    </textarea>
+
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="modal-footer">
+
+
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal">
+
+                    Cancel
+
+                </button>
+
+
+                <button
+                    type="button"
+                    id="confirmDecisionBtn"
+                    class="btn btn-success">
+
+                    Confirm
+
+                </button>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+
+<!-- TOAST -->
+
+<div
+    id="extensionToast"
+    class="extension-toast">
+</div>
+
+
+
+<!-- BOOTSTRAP JS -->
+
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+</script>
+
+
+<!-- EXISTING LMS JS -->
+
+<script src="js/script.js"></script>
+
+
+<!-- EXTENSION REQUEST JS -->
+
+<script src="js/extension-requests.js"></script>
+
+
+</body>
+
+</html>
