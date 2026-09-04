@@ -1,6 +1,8 @@
 from django.urls import path
 
 from .views import (
+    register,
+    login,
     books,
     book_by_id,
     issues,
@@ -15,6 +17,10 @@ from .views import (
 
 
 urlpatterns = [
+
+    path("register/", register),
+
+    path("login/", login),
 
     path("books/", books),
     path("books/<int:id>/", book_by_id),

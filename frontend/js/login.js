@@ -13,6 +13,7 @@ const loginPassword =
 
 const loginError =
     document.getElementById("loginError");
+
 const togglePassword =
     document.getElementById("togglePassword");
 
@@ -35,10 +36,8 @@ if (togglePassword) {
                     ? "text"
                     : "password";
 
-
             const icon =
                 togglePassword.querySelector("i");
-
 
             icon.className =
                 isPassword
@@ -50,91 +49,86 @@ if (togglePassword) {
 
 }
 
+
 /* =====================================================
-   LOGIN
+   LOGIN API
 ===================================================== */
 
 loginForm.addEventListener(
     "submit",
-    function (event) {
+    async function (event) {
 
         event.preventDefault();
 
-
         const enteredEmail =
-            loginEmail.value
-                .trim()
-                .toLowerCase();
-
+            loginEmail.value.trim().toLowerCase();
 
         const enteredPassword =
             loginPassword.value;
 
 
-        /* GET REGISTERED USERS */
+        try {
 
-        const users =
-            JSON.parse(
-                localStorage.getItem("libraryUsers")
-            ) || [];
+            const response = await fetch(
+                "http://127.0.0.1:8000/api/login/",
+                {
+                    method: "POST",
 
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
 
-        /* NO USERS */
-
-        if (users.length === 0) {
-
-            loginError.textContent =
-                "No account found. Please create an account.";
-
-            return;
-
-        }
-
-
-        /* FIND USER */
-
-        const matchedUser =
-            users.find(function (user) {
-
-                return (
-                    user.email.toLowerCase() === enteredEmail &&
-                    user.password === enteredPassword
-                );
-
-            });
-
-
-        /* SUCCESS */
-
-        if (matchedUser) {
-
-            loginError.textContent = "";
-
-
-            localStorage.setItem(
-                "isLoggedIn",
-                "true"
+                    body: JSON.stringify({
+                        email: enteredEmail,
+                        password: enteredPassword
+                    })
+                }
             );
 
 
-            localStorage.setItem(
-                "currentUser",
-                JSON.stringify(matchedUser)
-            );
+            const data = await response.json();
 
 
-            window.location.href =
-                "index.html";
+            if (data.success) {
+
+                loginError.textContent =
+                    "Login successful.";
+
+                loginError.className =
+                    "login-message text-success";
+
+
+                setTimeout(function () {
+
+                    window.location.href =
+                        "index.html";
+
+                }, 500);
+
+            }
+
+            else {
+
+                loginError.textContent =
+                    data.message ||
+                    "Invalid email or password.";
+
+                loginError.className =
+                    "login-message text-danger";
+
+            }
 
         }
 
+        catch (error) {
 
-        /* FAILED */
-
-        else {
+            console.error(error);
 
             loginError.textContent =
-                "Invalid email or password.";
+                "Unable to connect to server. Please make sure Django server is running.";
+
+            loginError.className =
+                "login-message text-danger";
 
         }
 

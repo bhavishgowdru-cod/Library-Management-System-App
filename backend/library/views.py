@@ -1,15 +1,17 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .models import Book, Issue, Member
-from .models import Book, Issue, Member, ExtensionRequest
+from .models import Book, Issue, Member, ExtensionRequest, User
 import json
 
 
+# =====================================================
 # BOOKS API
+# =====================================================
 
 @csrf_exempt
 def books(request):
 
+    # ADD BOOK
     if request.method == "POST":
         try:
             data = json.loads(request.body)
@@ -33,15 +35,13 @@ def books(request):
                     "message": "Available copies cannot be negative"
                 }, status=400)
 
-            available_copies = int(available_copies)
-
             book = Book.objects.create(
                 book_name=book_name,
                 author_name=author_name,
                 isbn=isbn,
                 category=category,
                 department=department,
-                available_copies=available_copies,
+                available_copies=int(available_copies),
                 status="Available"
             )
 
@@ -57,12 +57,13 @@ def books(request):
                 "message": "Invalid request data"
             }, status=400)
 
+    # GET ALL BOOKS
     elif request.method == "GET":
 
-        book_data = []
+        books_data = []
 
         for book in Book.objects.all().order_by("-id"):
-            book_data.append({
+            books_data.append({
                 "id": book.id,
                 "book_name": book.book_name,
                 "author_name": book.author_name,
@@ -75,7 +76,7 @@ def books(request):
 
         return JsonResponse({
             "success": True,
-            "books": book_data
+            "books": books_data
         })
 
     return JsonResponse({
@@ -84,18 +85,25 @@ def books(request):
     }, status=405)
 
 
+# =====================================================
+# BOOK BY ID API
+# =====================================================
+
 @csrf_exempt
 def book_by_id(request, id):
 
     try:
         book = Book.objects.get(id=id)
+
     except Book.DoesNotExist:
         return JsonResponse({
             "success": False,
             "message": "Book not found"
         }, status=404)
 
+    # GET SINGLE BOOK
     if request.method == "GET":
+
         return JsonResponse({
             "success": True,
             "book": {
@@ -110,40 +118,55 @@ def book_by_id(request, id):
             }
         })
 
+    # UPDATE BOOK
     elif request.method == "PUT":
+
         try:
             data = json.loads(request.body)
 
-            book_name = data.get("book_name")
-            author_name = data.get("author_name")
-            isbn = data.get("isbn")
-            category = data.get("category", "")
-            department = data.get("department", "")
-            available_copies = data.get("available_copies")
+            book.book_name = data.get(
+                "book_name",
+                book.book_name
+            )
 
-            if not book_name or not author_name or not isbn:
-                return JsonResponse({
-                    "success": False,
-                    "message": "Book name, author name and ISBN are required"
-                }, status=400)
+            book.author_name = data.get(
+                "author_name",
+                book.author_name
+            )
 
-            if available_copies is None or int(available_copies) < 0:
-                return JsonResponse({
-                    "success": False,
-                    "message": "Available copies cannot be negative"
-                }, status=400)
+            book.isbn = data.get(
+                "isbn",
+                book.isbn
+            )
 
-            book.book_name = book_name
-            book.author_name = author_name
-            book.isbn = isbn
-            book.category = category
-            book.department = department
-            book.available_copies = int(available_copies)
+            book.category = data.get(
+                "category",
+                book.category
+            )
 
-            if book.available_copies > 0:
-                book.status = "Available"
-            else:
-                book.status = "Issued"
+            book.department = data.get(
+                "department",
+                book.department
+            )
+
+            if "available_copies" in data:
+                available_copies = int(
+                    data["available_copies"]
+                )
+
+                if available_copies < 0:
+                    return JsonResponse({
+                        "success": False,
+                        "message": "Available copies cannot be negative"
+                    }, status=400)
+
+                book.available_copies = available_copies
+
+            book.status = (
+                "Available"
+                if book.available_copies > 0
+                else "Issued"
+            )
 
             book.save()
 
@@ -159,7 +182,9 @@ def book_by_id(request, id):
                 "message": "Invalid request data"
             }, status=400)
 
+    # DELETE BOOK
     elif request.method == "DELETE":
+
         book.delete()
 
         return JsonResponse({
@@ -174,7 +199,7 @@ def book_by_id(request, id):
 
 
 # =====================================================
-# ISSUE / RETURN API
+# ISSUE API
 # =====================================================
 
 @csrf_exempt
@@ -249,12 +274,11 @@ def issues(request):
             )
 
             book.available_copies -= 1
-
-            if book.available_copies == 0:
-                book.status = "Issued"
-            else:
-                book.status = "Available"
-
+            book.status = (
+                "Available"
+                if book.available_copies > 0
+                else "Issued"
+            )
             book.save()
 
             return JsonResponse({
@@ -279,7 +303,9 @@ def issues(request):
             member_name = ""
 
             try:
-                member = Member.objects.get(member_id=issue.member_id)
+                member = Member.objects.get(
+                    member_id=issue.member_id
+                )
                 member_name = member.name
             except Member.DoesNotExist:
                 pass
@@ -310,19 +336,58 @@ def issues(request):
         "message": "Method not allowed"
     }, status=405)
 
+# =====================================================
+# ISSUE BY ID API
+# =====================================================
 
 @csrf_exempt
 def issue_by_id(request, id):
 
     try:
         issue = Issue.objects.select_related("book").get(id=id)
+
     except Issue.DoesNotExist:
         return JsonResponse({
             "success": False,
             "message": "Issue record not found"
         }, status=404)
 
-    if request.method == "PUT":
+    # GET SINGLE ISSUE
+    if request.method == "GET":
+
+        member_name = ""
+
+        try:
+            member = Member.objects.get(
+                member_id=issue.member_id
+            )
+            member_name = member.name
+
+        except Member.DoesNotExist:
+            pass
+
+        return JsonResponse({
+            "success": True,
+            "issue": {
+                "id": issue.id,
+                "bookId": issue.book.id,
+                "bookName": issue.book.book_name,
+                "memberId": issue.member_id,
+                "memberName": member_name,
+                "issueDate": str(issue.issue_date),
+                "returnDate": str(issue.return_date),
+                "actualReturnDate": (
+                    str(issue.actual_return_date)
+                    if issue.actual_return_date
+                    else None
+                ),
+                "status": issue.status
+            }
+        })
+
+    # RETURN / UPDATE ISSUE
+    elif request.method == "PUT":
+
         try:
             data = json.loads(request.body)
             actual_return_date = data.get("actual_return_date")
@@ -364,7 +429,6 @@ def issue_by_id(request, id):
         "success": False,
         "message": "Method not allowed"
     }, status=405)
-
 
 # =====================================================
 # MEMBERS API
@@ -497,7 +561,25 @@ def member_by_id(request, id):
             "message": "Member not found"
         }, status=404)
 
-    if request.method == "PUT":
+
+    # GET SINGLE MEMBER
+    if request.method == "GET":
+        return JsonResponse({
+            "success": True,
+            "member": {
+                "id": member.id,
+                "member_id": member.member_id,
+                "name": member.name,
+                "email": member.email,
+                "phone": member.phone,
+                "membership": member.membership,
+                "status": member.status
+            }
+        })
+
+
+    # UPDATE MEMBER
+    elif request.method == "PUT":
         try:
             data = json.loads(request.body)
 
@@ -519,6 +601,8 @@ def member_by_id(request, id):
                 "message": "Invalid JSON"
             }, status=400)
 
+
+    # DELETE MEMBER
     elif request.method == "DELETE":
         member.delete()
 
@@ -527,77 +611,11 @@ def member_by_id(request, id):
             "message": "Member deleted successfully"
         })
 
+
     return JsonResponse({
         "success": False,
         "message": "Method not allowed"
     }, status=405)
-
-# =====================================================
-# RETURN BOOK API
-# =====================================================
-
-@csrf_exempt
-def return_book(request, id):
-
-    if request.method != "PUT":
-
-        return JsonResponse({
-            "success": False,
-            "message": "Method not allowed"
-        }, status=405)
-
-
-    try:
-
-        issue = Issue.objects.get(id=id)
-
-    except Issue.DoesNotExist:
-
-        return JsonResponse({
-            "success": False,
-            "message": "Issue record not found"
-        }, status=404)
-
-
-    if issue.status == "Returned":
-
-        return JsonResponse({
-            "success": False,
-            "message": "Book already returned"
-        }, status=400)
-
-
-    data = json.loads(request.body)
-
-    actual_return_date = data.get("actual_return_date")
-
-
-    if not actual_return_date:
-
-        return JsonResponse({
-            "success": False,
-            "message": "Return date is required"
-        }, status=400)
-
-
-    issue.status = "Returned"
-    issue.actual_return_date = actual_return_date
-    issue.save()
-
-
-    # Increase available book copies
-    book = issue.book
-    book.available_copies += 1
-    book.save()
-
-
-    return JsonResponse({
-
-        "success": True,
-
-        "message": "Book returned successfully"
-
-    })
 
 # =====================================================
 # RETURNS API
@@ -606,44 +624,135 @@ def return_book(request, id):
 @csrf_exempt
 def returns(request):
 
+    # GET ALL RETURNED BOOKS
     if request.method == "GET":
 
         returned_books = Issue.objects.filter(
             status="Returned"
-        ).select_related("book")
+        ).select_related("book").order_by("-id")
 
         data = []
 
         for issue in returned_books:
 
             data.append({
-
                 "id": issue.id,
-
                 "book_id": issue.book.id,
-
                 "book_name": issue.book.book_name,
-
                 "member_id": issue.member_id,
-
                 "issue_date": str(issue.issue_date),
-
                 "return_date": str(issue.return_date),
-
                 "actual_return_date": (
                     str(issue.actual_return_date)
                     if issue.actual_return_date
                     else None
                 ),
-
                 "status": issue.status
-
             })
 
         return JsonResponse({
             "success": True,
             "returns": data
         })
+
+
+    return JsonResponse({
+        "success": False,
+        "message": "Method not allowed"
+    }, status=405)
+
+
+# =====================================================
+# RETURN BOOK BY ID API
+# =====================================================
+
+@csrf_exempt
+def return_book(request, id):
+
+    try:
+        issue = Issue.objects.select_related("book").get(id=id)
+
+    except Issue.DoesNotExist:
+        return JsonResponse({
+            "success": False,
+            "message": "Issue record not found"
+        }, status=404)
+
+
+    # GET SINGLE RETURN RECORD
+    if request.method == "GET":
+
+        if issue.status != "Returned":
+            return JsonResponse({
+                "success": False,
+                "message": "Book is not returned yet"
+            }, status=400)
+
+        return JsonResponse({
+            "success": True,
+            "return": {
+                "id": issue.id,
+                "book_id": issue.book.id,
+                "book_name": issue.book.book_name,
+                "member_id": issue.member_id,
+                "issue_date": str(issue.issue_date),
+                "return_date": str(issue.return_date),
+                "actual_return_date": (
+                    str(issue.actual_return_date)
+                    if issue.actual_return_date
+                    else None
+                ),
+                "status": issue.status
+            }
+        })
+
+
+    # RETURN BOOK
+    elif request.method == "PUT":
+
+        try:
+            data = json.loads(request.body)
+
+            actual_return_date = data.get("actual_return_date")
+
+            if issue.status == "Returned":
+                return JsonResponse({
+                    "success": False,
+                    "message": "Book already returned"
+                }, status=400)
+
+            if not actual_return_date:
+                return JsonResponse({
+                    "success": False,
+                    "message": "Return date is required"
+                }, status=400)
+
+
+            # Update issue
+            issue.status = "Returned"
+            issue.actual_return_date = actual_return_date
+            issue.save()
+
+
+            # Increase available book copies
+            book = issue.book
+            book.available_copies += 1
+            book.status = "Available"
+            book.save()
+
+
+            return JsonResponse({
+                "success": True,
+                "message": "Book returned successfully",
+                "available_copies": book.available_copies
+            })
+
+        except (json.JSONDecodeError, ValueError):
+
+            return JsonResponse({
+                "success": False,
+                "message": "Invalid request data"
+            }, status=400)
 
 
     return JsonResponse({
@@ -697,6 +806,13 @@ def extension_requests(request):
                     "success": False,
                     "message": "Issue record not found"
                 }, status=404)
+
+            # ADD THIS VALIDATION HERE
+            if issue.status == "Returned":
+                return JsonResponse({
+                    "success": False,
+                    "message": "Cannot request extension for a returned book"
+                }, status=400)
 
 
             extension = ExtensionRequest.objects.create(
@@ -952,4 +1068,137 @@ def extension_request_by_id(request, id):
 
         "message": "Method not allowed"
 
+    }, status=405)
+
+# =====================================================
+# REGISTER API
+# =====================================================
+
+@csrf_exempt
+def register(request):
+
+    if request.method == "POST":
+
+        try:
+            data = json.loads(request.body)
+
+            name = data.get("name")
+            email = data.get("email")
+            dob = data.get("dob")
+            password = data.get("password")
+
+            if not name or not email or not dob or not password:
+                return JsonResponse({
+                    "success": False,
+                    "message": "All fields are required"
+                }, status=400)
+
+            if User.objects.filter(email=email).exists():
+                return JsonResponse({
+                    "success": False,
+                    "message": "Email already registered"
+                }, status=400)
+
+            user = User.objects.create(
+                name=name,
+                email=email,
+                dob=dob,
+                password=password
+            )
+
+            return JsonResponse({
+                "success": True,
+                "message": "User registered successfully",
+                "user": {
+                    "id": user.id,
+                    "name": user.name,
+                    "email": user.email,
+                    "dob": str(user.dob)
+                }
+            }, status=201)
+
+        except json.JSONDecodeError:
+            return JsonResponse({
+                "success": False,
+                "message": "Invalid JSON"
+            }, status=400)
+
+    elif request.method == "GET":
+
+        users_data = []
+
+        for user in User.objects.all().order_by("-id"):
+            users_data.append({
+                "id": user.id,
+                "name": user.name,
+                "email": user.email,
+                "dob": str(user.dob)
+            })
+
+        return JsonResponse({
+            "success": True,
+            "users": users_data
+        })
+
+    return JsonResponse({
+        "success": False,
+        "message": "Method not allowed"
+    }, status=405)
+
+# =====================================================
+# LOGIN API
+# =====================================================
+
+@csrf_exempt
+def login(request):
+
+    if request.method == "POST":
+
+        try:
+            data = json.loads(request.body)
+
+            email = data.get("email")
+            password = data.get("password")
+
+            if not email or not password:
+                return JsonResponse({
+                    "success": False,
+                    "message": "Email and password are required"
+                }, status=400)
+
+            try:
+                user = User.objects.get(email=email)
+
+            except User.DoesNotExist:
+                return JsonResponse({
+                    "success": False,
+                    "message": "User not found"
+                }, status=404)
+
+            if user.password != password:
+                return JsonResponse({
+                    "success": False,
+                    "message": "Invalid password"
+                }, status=400)
+
+            return JsonResponse({
+                "success": True,
+                "message": "Login successful",
+                "user": {
+                    "id": user.id,
+                    "name": user.name,
+                    "email": user.email,
+                    "dob": str(user.dob)
+                }
+            })
+
+        except json.JSONDecodeError:
+            return JsonResponse({
+                "success": False,
+                "message": "Invalid JSON"
+            }, status=400)
+
+    return JsonResponse({
+        "success": False,
+        "message": "Method not allowed"
     }, status=405)

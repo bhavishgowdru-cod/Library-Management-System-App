@@ -7,30 +7,34 @@ const dob = document.getElementById("dob");
 const registerEmail = document.getElementById("registerEmail");
 const registerPassword = document.getElementById("registerPassword");
 const confirmPassword = document.getElementById("confirmPassword");
-const registerMessage = document.getElementById("registerMessage");
+
+const registerMessage = document.getElementById("registerError");
 
 
-registerForm.addEventListener("submit", function (event) {
+registerForm.addEventListener("submit", async function (event) {
 
     event.preventDefault();
 
+
     const firstNameValue = firstName.value.trim();
+
+    // Middle name is optional
     const middleNameValue = middleName.value.trim();
+
     const lastNameValue = lastName.value.trim();
 
     const dobValue = dob.value;
 
-    const emailValue =
-        registerEmail.value.trim().toLowerCase();
+    const emailValue = registerEmail.value
+        .trim()
+        .toLowerCase();
 
-    const passwordValue =
-        registerPassword.value;
+    const passwordValue = registerPassword.value;
 
-    const confirmPasswordValue =
-        confirmPassword.value;
+    const confirmPasswordValue = confirmPassword.value;
 
 
-    /* PASSWORD RULE */
+    // PASSWORD VALIDATION
 
     const passwordPattern =
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
@@ -42,13 +46,13 @@ registerForm.addEventListener("submit", function (event) {
             "Password must contain uppercase, lowercase, number and special character.";
 
         registerMessage.className =
-            "text-danger mb-3";
+            "login-message text-danger mb-3";
 
         return;
     }
 
 
-    /* CONFIRM PASSWORD */
+    // CONFIRM PASSWORD VALIDATION
 
     if (passwordValue !== confirmPasswordValue) {
 
@@ -56,88 +60,97 @@ registerForm.addEventListener("submit", function (event) {
             "Password and Confirm Password do not match.";
 
         registerMessage.className =
-            "text-danger mb-3";
+            "login-message text-danger mb-3";
 
         return;
     }
 
 
-    /* GET EXISTING USERS */
+    // CREATE FULL NAME
+    // Middle name optional hai
 
-    const users =
-        JSON.parse(
-            localStorage.getItem("libraryUsers")
-        ) || [];
-
-
-    /* CHECK EMAIL */
-
-    const existingUser =
-        users.find(function (user) {
-
-            return user.email === emailValue;
-
-        });
+    const fullName = [
+        firstNameValue,
+        middleNameValue,
+        lastNameValue
+    ]
+        .filter(Boolean)
+        .join(" ");
 
 
-    if (existingUser) {
+    try {
+
+        const response = await fetch(
+            "http://127.0.0.1:8000/api/register/",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+
+                    name: fullName,
+
+                    email: emailValue,
+
+                    dob: dobValue,
+
+                    password: passwordValue
+
+                })
+
+            }
+        );
+
+
+        const data = await response.json();
+
+
+        if (data.success) {
+
+            registerMessage.textContent =
+                "Account created successfully.";
+
+            registerMessage.className =
+                "login-message text-success mb-3";
+
+
+            registerForm.reset();
+
+
+            setTimeout(function () {
+
+                window.location.href =
+                    "login.html";
+
+            }, 1000);
+
+        }
+
+        else {
+
+            registerMessage.textContent =
+                data.message || "Registration failed.";
+
+            registerMessage.className =
+                "login-message text-danger mb-3";
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(error);
 
         registerMessage.textContent =
-            "Account already exists with this email.";
+            "Unable to connect to server.";
 
         registerMessage.className =
-            "text-danger mb-3";
+            "login-message text-danger mb-3";
 
-        return;
     }
-
-
-    /* CREATE USER */
-
-    const newUser = {
-
-        firstName: firstNameValue,
-
-        middleName: middleNameValue,
-
-        lastName: lastNameValue,
-
-        dob: dobValue,
-
-        email: emailValue,
-
-        password: passwordValue
-
-    };
-
-
-    /* ADD USER */
-
-    users.push(newUser);
-
-
-    /* SAVE USER */
-
-    localStorage.setItem(
-        "libraryUsers",
-        JSON.stringify(users)
-    );
-
-
-    registerMessage.textContent =
-        "Account created successfully.";
-
-    registerMessage.className =
-        "text-success mb-3";
-
-
-    /* OPEN LOGIN PAGE */
-
-    setTimeout(function () {
-
-        window.location.href =
-            "login.html";
-
-    }, 1000);
 
 });
