@@ -62,7 +62,7 @@ def books(request):
 
         books_data = []
 
-        for book in Book.objects.all().order_by("-id"):
+        for book in Book.objects.all().order_by("id"):
             books_data.append({
                 "id": book.id,
                 "book_name": book.book_name,
@@ -433,8 +433,13 @@ def issue_by_id(request, id):
 # =====================================================
 # MEMBERS API
 # =====================================================
+
 @csrf_exempt
 def members(request):
+
+    # =====================================
+    # ADD MEMBER
+    # =====================================
 
     if request.method == "POST":
 
@@ -442,16 +447,18 @@ def members(request):
 
             data = json.loads(request.body)
 
-            member_id = data.get("member_id")
-            name = data.get("name")
-            email = data.get("email")
-            phone = data.get("phone")
-            membership = data.get("membership")
+            name = data.get("name", "").strip()
+            email = data.get("email", "").strip()
+            phone = data.get("phone", "").strip()
+            membership = data.get("membership", "").strip()
             status = data.get("status", "Active")
 
 
+            # =====================================
+            # VALIDATION
+            # =====================================
+
             if (
-                not member_id or
                 not name or
                 not email or
                 not phone or
@@ -464,54 +471,141 @@ def members(request):
                 }, status=400)
 
 
-            if Member.objects.filter(
+            # =====================================
+            # AUTO GENERATE MEMBER ID
+            # M001, M002, M003...
+            # =====================================
+
+            highest_number = 0
+
+
+            for existing_member in Member.objects.all():
+
+                member_id_value = existing_member.member_id
+
+
+                if (
+                    member_id_value and
+                    member_id_value.startswith("M")
+                ):
+
+                    try:
+
+                        number = int(
+                            member_id_value[1:]
+                        )
+
+
+                        if number > highest_number:
+
+                            highest_number = number
+
+
+                    except ValueError:
+
+                        continue
+
+
+            # NEXT ID
+
+            next_number = highest_number + 1
+
+            member_id = f"M{next_number:03d}"
+
+
+            # =====================================
+            # DUPLICATE PROTECTION
+            # =====================================
+
+            while Member.objects.filter(
                 member_id=member_id
             ).exists():
 
-                return JsonResponse({
-                    "success": False,
-                    "message": "Member ID already exists"
-                }, status=400)
+                next_number += 1
 
+                member_id = f"M{next_number:03d}"
+
+
+            # =====================================
+            # CREATE MEMBER
+            # =====================================
 
             member = Member.objects.create(
+
                 member_id=member_id,
+
                 name=name,
+
                 email=email,
+
                 phone=phone,
+
                 membership=membership,
+
                 status=status
+
             )
 
 
             return JsonResponse({
+
                 "success": True,
+
                 "message": "Member added successfully",
+
                 "member": {
+
                     "id": member.id,
+
                     "member_id": member.member_id,
+
                     "name": member.name,
+
                     "email": member.email,
+
                     "phone": member.phone,
+
                     "membership": member.membership,
+
                     "status": member.status
+
                 }
+
             }, status=201)
 
 
         except json.JSONDecodeError:
 
             return JsonResponse({
+
                 "success": False,
+
                 "message": "Invalid JSON"
+
             }, status=400)
 
+
+        except Exception as e:
+
+            return JsonResponse({
+
+                "success": False,
+
+                "message": str(e)
+
+            }, status=500)
+
+
+    # =====================================
+    # GET ALL MEMBERS
+    # =====================================
 
     elif request.method == "GET":
 
         members_data = []
 
-        for member in Member.objects.all().order_by("-id"):
+
+        for member in Member.objects.all().order_by("member_id"):
 
             members_data.append({
 
@@ -541,6 +635,10 @@ def members(request):
         })
 
 
+    # =====================================
+    # METHOD NOT ALLOWED
+    # =====================================
+
     return JsonResponse({
 
         "success": False,
@@ -549,74 +647,216 @@ def members(request):
 
     }, status=405)
 
+# =====================================================
+# MEMBER BY ID API
+# EDIT / DELETE MEMBER
+# =====================================================
 
 @csrf_exempt
 def member_by_id(request, id):
 
     try:
+
         member = Member.objects.get(id=id)
+
+
     except Member.DoesNotExist:
+
         return JsonResponse({
+
             "success": False,
+
             "message": "Member not found"
+
         }, status=404)
 
 
-    # GET SINGLE MEMBER
-    if request.method == "GET":
-        return JsonResponse({
-            "success": True,
-            "member": {
-                "id": member.id,
-                "member_id": member.member_id,
-                "name": member.name,
-                "email": member.email,
-                "phone": member.phone,
-                "membership": member.membership,
-                "status": member.status
-            }
-        })
-
-
+    # =================================================
     # UPDATE MEMBER
-    elif request.method == "PUT":
+    # =================================================
+
+    if request.method == "PUT":
+
         try:
+
             data = json.loads(request.body)
 
-            member.name = data.get("name", member.name)
-            member.email = data.get("email", member.email)
-            member.phone = data.get("phone", member.phone)
-            member.membership = data.get("membership", member.membership)
-            member.status = data.get("status", member.status)
+
+            name = data.get(
+                "name",
+                member.name
+            ).strip()
+
+
+            email = data.get(
+                "email",
+                member.email
+            ).strip()
+
+
+            phone = data.get(
+                "phone",
+                member.phone
+            ).strip()
+
+
+            membership = data.get(
+                "membership",
+                member.membership
+            ).strip()
+
+
+            status = data.get(
+                "status",
+                member.status
+            ).strip()
+
+
+            # =========================================
+            # VALIDATION
+            # =========================================
+
+            if (
+
+                not name or
+                not email or
+                not phone or
+                not membership
+
+            ):
+
+                return JsonResponse({
+
+                    "success": False,
+
+                    "message": "All fields are required"
+
+                }, status=400)
+
+
+            # =========================================
+            # UPDATE
+            # =========================================
+
+            member.name = name
+
+            member.email = email
+
+            member.phone = phone
+
+            member.membership = membership
+
+            member.status = status
+
+
             member.save()
 
+
             return JsonResponse({
+
                 "success": True,
-                "message": "Member updated successfully"
-            })
+
+                "message": "Member updated successfully",
+
+                "member": {
+
+                    "id": member.id,
+
+                    "member_id": member.member_id,
+
+                    "name": member.name,
+
+                    "email": member.email,
+
+                    "phone": member.phone,
+
+                    "membership": member.membership,
+
+                    "status": member.status
+
+                }
+
+            }, status=200)
+
 
         except json.JSONDecodeError:
+
             return JsonResponse({
+
                 "success": False,
-                "message": "Invalid JSON"
+
+                "message": "Invalid JSON data"
+
             }, status=400)
 
 
+        except Exception as error:
+
+            return JsonResponse({
+
+                "success": False,
+
+                "message": str(error)
+
+            }, status=500)
+
+
+    # =================================================
     # DELETE MEMBER
+    # =================================================
+
     elif request.method == "DELETE":
+
         member.delete()
 
+
         return JsonResponse({
+
             "success": True,
+
             "message": "Member deleted successfully"
-        })
+
+        }, status=200)
+
+
+    # =================================================
+    # GET SINGLE MEMBER
+    # =================================================
+
+    elif request.method == "GET":
+
+        return JsonResponse({
+
+            "success": True,
+
+            "member": {
+
+                "id": member.id,
+
+                "member_id": member.member_id,
+
+                "name": member.name,
+
+                "email": member.email,
+
+                "phone": member.phone,
+
+                "membership": member.membership,
+
+                "status": member.status
+
+            }
+
+        }, status=200)
 
 
     return JsonResponse({
-        "success": False,
-        "message": "Method not allowed"
-    }, status=405)
 
+        "success": False,
+
+        "message": "Method not allowed"
+
+    }, status=405)
 # =====================================================
 # RETURNS API
 # =====================================================
