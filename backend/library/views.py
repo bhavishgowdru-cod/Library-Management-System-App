@@ -1442,3 +1442,163 @@ def login(request):
         "success": False,
         "message": "Method not allowed"
     }, status=405)
+
+# =====================================================
+# PROFILE API
+# =====================================================
+
+@csrf_exempt
+def profile_by_id(request, id):
+
+    try:
+        user = User.objects.get(id=id)
+
+    except User.DoesNotExist:
+        return JsonResponse({
+            "success": False,
+            "message": "User not found"
+        }, status=404)
+
+    # =================================================
+    # GET PROFILE
+    # =================================================
+
+    if request.method == "GET":
+
+        return JsonResponse({
+            "success": True,
+            "profile": {
+                "id": user.id,
+                "name": user.name,
+                "email": user.email,
+                "dob": str(user.dob),
+
+                "phone": user.phone,
+                "memberId": user.member_id,
+                "role": user.role,
+                "department": user.department,
+                "accountStatus": user.account_status,
+
+                "joiningDate": (
+                    str(user.joining_date)
+                    if user.joining_date
+                    else ""
+                ),
+
+                "address": user.address,
+                "profilePicture": user.profile_picture
+            }
+        })
+
+    # =================================================
+    # UPDATE PROFILE
+    # =================================================
+
+    elif request.method == "PUT":
+
+        try:
+            data = json.loads(request.body)
+
+            name = data.get("name")
+            email = data.get("email")
+            phone = data.get("phone")
+            member_id = data.get("memberId")
+            role = data.get("role")
+            department = data.get("department")
+            account_status = data.get("accountStatus")
+            joining_date = data.get("joiningDate")
+            address = data.get("address")
+            profile_picture = data.get("profilePicture")
+
+            # REQUIRED FIELDS
+            if not name:
+                return JsonResponse({
+                    "success": False,
+                    "message": "Name is required"
+                }, status=400)
+
+            if not email:
+                return JsonResponse({
+                    "success": False,
+                    "message": "Email is required"
+                }, status=400)
+
+            if not phone:
+                return JsonResponse({
+                    "success": False,
+                    "message": "Phone is required"
+                }, status=400)
+
+            if not department:
+                return JsonResponse({
+                    "success": False,
+                    "message": "Department is required"
+                }, status=400)
+
+            # CHECK EMAIL
+            if User.objects.filter(
+                email=email
+            ).exclude(
+                id=user.id
+            ).exists():
+
+                return JsonResponse({
+                    "success": False,
+                    "message": "Email already registered"
+                }, status=400)
+
+            # UPDATE USER
+            user.name = name
+            user.email = email
+            user.phone = phone
+            user.member_id = member_id or "M001"
+            user.role = role or "Administrator"
+            user.department = department
+            user.account_status = account_status or "Active"
+
+            if joining_date:
+                user.joining_date = joining_date
+
+            user.address = address or ""
+            user.profile_picture = profile_picture or ""
+
+            user.save()
+
+            return JsonResponse({
+                "success": True,
+                "message": "Profile updated successfully",
+
+                "profile": {
+                    "id": user.id,
+                    "name": user.name,
+                    "email": user.email,
+                    "dob": str(user.dob),
+
+                    "phone": user.phone,
+                    "memberId": user.member_id,
+                    "role": user.role,
+                    "department": user.department,
+                    "accountStatus": user.account_status,
+
+                    "joiningDate": (
+                        str(user.joining_date)
+                        if user.joining_date
+                        else ""
+                    ),
+
+                    "address": user.address,
+                    "profilePicture": user.profile_picture
+                }
+            })
+
+        except json.JSONDecodeError:
+
+            return JsonResponse({
+                "success": False,
+                "message": "Invalid JSON"
+            }, status=400)
+
+    return JsonResponse({
+        "success": False,
+        "message": "Method not allowed"
+    }, status=405)

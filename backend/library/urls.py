@@ -12,7 +12,8 @@ from .views import (
     returns,
     return_book,
     extension_requests,
-    extension_request_by_id
+    extension_request_by_id,
+    profile_by_id
 )
 
 
@@ -36,5 +37,7 @@ urlpatterns = [
     
     path("extensions/", extension_requests),
     path("extensions/<int:id>/", extension_request_by_id),
+
+    path("profile/<int:id>/", profile_by_id),
 
 ]

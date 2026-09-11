@@ -165,23 +165,23 @@ class ExtensionRequest(models.Model):
 # =====================================================
 
 class User(models.Model):
-
-    id = models.AutoField(primary_key=True)
-
-    name = models.CharField(max_length=200)
-
-    email = models.EmailField(
-        max_length=200,
-        unique=True
-    )
-
+    name = models.CharField(max_length=100)
+    email = models.EmailField(unique=True)
     dob = models.DateField()
+    password = models.CharField(max_length=255)
 
-    password = models.CharField(max_length=200)
-
-    created_at = models.DateTimeField(
-        auto_now_add=True
+    phone = models.CharField(max_length=15, blank=True, default="")
+    member_id = models.CharField(max_length=50, blank=True, default="M001")
+    role = models.CharField(max_length=100, blank=True, default="Administrator")
+    department = models.CharField(max_length=100, blank=True, default="")
+    account_status = models.CharField(
+        max_length=20,
+        blank=True,
+        default="Active"
     )
+    joining_date = models.DateField(null=True, blank=True)
+    address = models.TextField(blank=True, default="")
+    profile_picture = models.TextField(blank=True, default="")
 
     def __str__(self):
-        return self.email
+        return self.name

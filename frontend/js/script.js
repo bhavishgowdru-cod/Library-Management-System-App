@@ -1390,182 +1390,261 @@ function(page) {
     );
 };
 
-
-/*  
+/* =====================================================
    MEMBERS
-   WITH PAGINATION
-  */
+   WITH MYSQL + SEARCH + PAGINATION
+===================================================== */
 
 function initMembers() {
 
+    /* =====================================================
+       ELEMENTS
+    ===================================================== */
+
     const table =
-        document.getElementById("memberTableBody");
+        document.getElementById(
+            "memberTableBody"
+        );
 
     const form =
-        document.getElementById("addMemberForm");
+        document.getElementById(
+            "addMemberForm"
+        );
 
     if (!table || !form) {
         return;
     }
 
+
+    /* =====================================================
+       DATA
+    ===================================================== */
+
+    let members = [];
+
+    let currentList = [];
+
+    const rowsPerPage = 5;
+
+    let currentPage = 1;
+
+
+    /* =====================================================
+       PHONE VALIDATION
+    ===================================================== */
+
     const phoneInput =
-    document.getElementById("addPhone");
-
-
-if (phoneInput) {
-
-    phoneInput.addEventListener(
-        "input",
-        function() {
-
-            // Remove letters and special characters
-            this.value =
-                this.value.replace(/\D/g, "");
-
-            // Maximum 10 digits
-            this.value =
-                this.value.slice(0, 10);
-
-        }
-    );
-
-}
-
-let members = [];
-
-const rowsPerPage = 5;
-
-let currentPage = 1;
-
-let currentList = members;
-
-
-/* =====================================================
-   LOAD MEMBERS FROM MYSQL
-===================================================== */
-
-async function loadMembersFromBackend() {
-
-    try {
-
-        const response =
-            await fetch(
-                "http://127.0.0.1:8000/api/members/"
-            );
-
-        if (!response.ok) {
-
-            throw new Error(
-                "Unable to load members"
-            );
-
-        }
-
-        const data =
-            await response.json();
-
-        if (!data.success) {
-
-            throw new Error(
-                data.message ||
-                "Unable to load members"
-            );
-
-        }
-
-        members =
-            data.members || [];
-
-        currentList =
-            members;
-
-        console.log(
-            "Members loaded from MySQL:",
-            members
+        document.getElementById(
+            "addPhone"
         );
 
-        display(
-            currentList
-        );
+    if (phoneInput) {
 
-    } catch (error) {
+        phoneInput.addEventListener(
+            "input",
+            function() {
 
-        console.error(
-            "Error loading members:",
-            error
+                this.value =
+                    this.value
+                        .replace(/\D/g, "")
+                        .slice(0, 10);
+
+            }
         );
 
     }
 
-} // Function ends here
 
+    /* =====================================================
+       PAGINATION CONTAINER
+    ===================================================== */
 
-// INITIAL LOAD FROM MYSQL
-loadMembersFromBackend();
-
-
-/* 
-   CREATE PAGINATION BOX IF IT DOES NOT EXIST
- */
-
-let pagination =
-    document.getElementById("memberPagination");
-
-if (!pagination) {
-
-    pagination =
-        document.createElement("div");
-
-    pagination.id =
-        "memberPagination";
-
-    pagination.className =
-        "mt-3 d-flex justify-content-center";
-
-    const tableContainer =
-        table.closest(".table-responsive");
-
-    if (tableContainer) {
-
-        tableContainer.parentNode.insertBefore(
-            pagination,
-            tableContainer.nextSibling
+    let pagination =
+        document.getElementById(
+            "memberPagination"
         );
 
-    } else {
+    if (!pagination) {
 
-        table.parentNode.appendChild(
-            pagination
-        );
+        pagination =
+            document.createElement(
+                "div"
+            );
+
+        pagination.id =
+            "memberPagination";
+
+        pagination.className =
+            "mt-3";
+
+
+        const tableContainer =
+            table.closest(
+                ".table-responsive"
+            );
+
+
+        if (tableContainer) {
+
+            tableContainer.parentNode.insertBefore(
+                pagination,
+                tableContainer.nextSibling
+            );
+
+        } else {
+
+            table.parentNode.appendChild(
+                pagination
+            );
+
+        }
+
     }
-}
-/* =====================================================
-   DISPLAY MEMBERS
-===================================================== */
 
-function display(list = members) {
+
+    /* =====================================================
+       LOAD MEMBERS FROM MYSQL
+    ===================================================== */
+
+    async function loadMembersFromBackend() {
+
+        try {
+
+            const response =
+                await fetch(
+                    "http://127.0.0.1:8000/api/members/"
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Unable to load members"
+                );
+
+            }
+
+
+            const data =
+                await response.json();
+
+
+            if (!data.success) {
+
+                throw new Error(
+                    data.message ||
+                    "Unable to load members"
+                );
+
+            }
+
+
+            /* =============================================
+               NEWEST MEMBER FIRST
+            ============================================= */
+
+            members =
+                (data.members || [])
+                    .slice()
+                    .sort(
+                        function(a, b) {
+
+                            return (
+                                Number(b.id) || 0
+                            ) -
+                            (
+                                Number(a.id) || 0
+                            );
+
+                        }
+                    );
+
+
+            currentList =
+                members;
+
+
+            /* Keep current page valid */
+
+            const totalPages =
+                Math.ceil(
+                    currentList.length /
+                    rowsPerPage
+                );
+
+
+            if (
+                currentPage > totalPages &&
+                totalPages > 0
+            ) {
+
+                currentPage =
+                    totalPages;
+
+            }
+
+
+            display(
+                currentList
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Error loading members:",
+                error
+            );
+
+
+            table.innerHTML =
+                emptyRow(
+                    7,
+                    "Unable to load members."
+                );
+
+
+            pagination.innerHTML =
+                "";
+
+        }
+
+    }
+
+
+    /* =====================================================
+       DISPLAY MEMBERS
+    ===================================================== */
+
+   function display(list = members) {
+
+    /* =============================================
+       STORE CURRENT LIST
+    ============================================= */
 
     currentList = list;
 
-    const totalRows =
-        currentList.length;
 
-    const totalPages =
-        Math.ceil(
-            totalRows / rowsPerPage
-        );
+    /* =============================================
+       TOTAL ROWS AND PAGES
+    ============================================= */
+
+    const totalRows = currentList.length;
+
+    const totalPages = Math.ceil(
+        totalRows / rowsPerPage
+    );
 
 
-    if (
-        currentPage > totalPages &&
-        totalPages > 0
-    ) {
+    /* =============================================
+       FIX CURRENT PAGE
+    ============================================= */
 
-        currentPage =
-            totalPages;
+    if (totalPages > 0 && currentPage > totalPages) {
+
+        currentPage = totalPages;
 
     }
-
 
     if (currentPage < 1) {
 
@@ -1574,43 +1653,53 @@ function display(list = members) {
     }
 
 
-    /* NO DATA */
+    /* =============================================
+       NO MEMBERS
+    ============================================= */
 
-    if (!totalRows) {
+    if (totalRows === 0) {
 
-        table.innerHTML =
-            emptyRow(
-                7,
-                "No members found."
-            );
+        table.innerHTML = emptyRow(
+            7,
+            "No members found."
+        );
+
+        pagination.innerHTML = "";
 
         return;
 
     }
 
 
-    /* PAGINATION DATA */
+    /* =============================================
+       CALCULATE ARRAY SLICE
+    ============================================= */
 
-    const start =
-        (currentPage - 1) *
-        rowsPerPage;
+    const startIndex =
+        (currentPage - 1) * rowsPerPage;
 
-    const end =
-        start +
-        rowsPerPage;
+    const endIndex =
+        startIndex + rowsPerPage;
+
+
+    /* =============================================
+       GET ONLY CURRENT PAGE MEMBERS
+    ============================================= */
 
     const pageList =
         currentList.slice(
-            start,
-            end
+            startIndex,
+            endIndex
         );
 
 
-    /* DISPLAY MEMBERS */
+    /* =============================================
+       DISPLAY MEMBERS
+    ============================================= */
 
     table.innerHTML =
-        pageList
-            .map(function(member) {
+        pageList.map(
+            function(member) {
 
                 const badge =
                     member.status === "Active"
@@ -1619,51 +1708,46 @@ function display(list = members) {
 
 
                 return `
+
                     <tr>
 
                         <td>
-                            ${escapeHTML(
-                                member.member_id
-                            )}
+                            ${escapeHTML(member.member_id)}
                         </td>
 
                         <td>
-                            ${escapeHTML(
-                                member.name
-                            )}
+                            ${escapeHTML(member.name)}
                         </td>
 
                         <td>
-                            ${escapeHTML(
-                                member.email
-                            )}
+                            ${escapeHTML(member.email)}
                         </td>
 
                         <td>
-                            ${escapeHTML(
-                                member.phone
-                            )}
+                            ${escapeHTML(member.phone)}
                         </td>
 
                         <td>
-                            ${escapeHTML(
-                                member.membership
-                            )}
+                            ${escapeHTML(member.membership)}
                         </td>
 
                         <td>
+
                             <span class="badge ${badge}">
-                                ${escapeHTML(
-                                    member.status
-                                )}
+
+                                ${escapeHTML(member.status)}
+
                             </span>
+
                         </td>
 
                         <td>
 
                             <button
+                                type="button"
                                 class="btn btn-sm btn-warning"
-                                onclick="editMember('${member.id}')">
+                                onclick="editMember('${member.id}')"
+                            >
 
                                 <i class="bi bi-pencil"></i>
                                 Edit
@@ -1672,8 +1756,10 @@ function display(list = members) {
 
 
                             <button
+                                type="button"
                                 class="btn btn-sm btn-danger"
-                                onclick="deleteMember('${member.id}')">
+                                onclick="deleteMember('${member.id}')"
+                            >
 
                                 <i class="bi bi-trash"></i>
                                 Delete
@@ -1683,229 +1769,239 @@ function display(list = members) {
                         </td>
 
                     </tr>
+
                 `;
 
-            })
-            .join("");
+            }
+        ).join("");
+
+
+    /* =============================================
+       CREATE PAGINATION
+    ============================================= */
+
+    createMemberPagination(
+        totalRows,
+        totalPages
+    );
 
 }
-
-
-
-
 
     /* =====================================================
        MEMBER PAGINATION
     ===================================================== */
 
-    function createMemberPagination(
-        totalRows,
-        totalPages
-    ) {
+    function createMemberPagination(totalRows, totalPages) {
 
-        pagination.innerHTML = "";
+    pagination.innerHTML = "";
 
 
-        /* Do not show pagination if only one page */
+    /* =============================================
+       PAGINATION INFO
+    ============================================= */
 
-        if (totalPages <= 1) {
-            return;
-        }
+    const start =
+        ((currentPage - 1) * rowsPerPage) + 1;
 
-
-        const start =
-            (currentPage - 1) *
-            rowsPerPage + 1;
-
-        const end =
-            Math.min(
-                currentPage * rowsPerPage,
-                totalRows
-            );
+    const end =
+        Math.min(
+            currentPage * rowsPerPage,
+            totalRows
+        );
 
 
-        pagination.innerHTML = `
+    /* =============================================
+       CREATE PAGINATION
+    ============================================= */
 
-            <div class="w-100">
+    pagination.innerHTML = `
 
-                <div class="d-flex
-                            justify-content-between
-                            align-items-center
-                            flex-wrap
-                            gap-2">
+        <div class="w-100">
 
-                    <div class="text-muted">
-
-                        Showing
-                        ${start}
-                        to
-                        ${end}
-                        of
-                        ${totalRows}
-                        entries
-
-                    </div>
+            <div class="
+                d-flex
+                justify-content-between
+                align-items-center
+                flex-wrap
+                gap-2
+            ">
 
 
-                    <nav>
+                <!-- SHOWING ENTRIES -->
 
-                        <ul class="pagination mb-0">
+                <div class="text-muted">
 
+                    Showing ${start} to ${end}
+                    of ${totalRows} entries
 
-                            <!-- PREVIOUS -->
-
-                            <li class="page-item
-                                ${
-                                    currentPage === 1
-                                        ? "disabled"
-                                        : ""
-                                }">
-
-                                <button
-                                    type="button"
-                                    class="page-link"
-                                    id="memberPrevious">
-
-                                    Previous
-
-                                </button>
-
-                            </li>
+                </div>
 
 
-                            <!-- PAGE NUMBERS -->
+                <!-- PAGINATION -->
 
-                            ${Array.from(
-                                {
-                                    length: totalPages
-                                },
-                                function(_, index) {
+                <nav>
 
-                                    const page =
-                                        index + 1;
-
-                                    return `
-
-                                        <li class="page-item
-                                            ${
-                                                page === currentPage
-                                                    ? "active"
-                                                    : ""
-                                            }">
-
-                                            <button
-                                                type="button"
-                                                class="page-link"
-                                                data-member-page="${page}">
-
-                                                ${page}
-
-                                            </button>
-
-                                        </li>
-
-                                    `;
-
-                                }
-                            ).join("")}
+                    <ul class="pagination mb-0">
 
 
-                            <!-- NEXT -->
+                        <!-- PREVIOUS -->
 
-                            <li class="page-item
+                        <li class="page-item ${
+                            currentPage === 1
+                                ? "disabled"
+                                : ""
+                        }">
+
+                            <button
+                                type="button"
+                                class="page-link"
+                                id="memberPrevious"
+                                ${currentPage === 1 ? "disabled" : ""}
+                            >
+
+                                Previous
+
+                            </button>
+
+                        </li>
+
+
+                        <!-- PAGE NUMBERS -->
+
+                        ${Array.from(
+                            { length: totalPages },
+                            (_, index) => {
+
+                                const page = index + 1;
+
+                                return `
+
+                                    <li class="page-item ${
+                                        page === currentPage
+                                            ? "active"
+                                            : ""
+                                    }">
+
+                                        <button
+                                            type="button"
+                                            class="page-link"
+                                            data-member-page="${page}"
+                                        >
+
+                                            ${page}
+
+                                        </button>
+
+                                    </li>
+
+                                `;
+
+                            }
+                        ).join("")}
+
+
+                        <!-- NEXT -->
+
+                        <li class="page-item ${
+                            currentPage === totalPages
+                                ? "disabled"
+                                : ""
+                        }">
+
+                            <button
+                                type="button"
+                                class="page-link"
+                                id="memberNext"
                                 ${
                                     currentPage === totalPages
                                         ? "disabled"
                                         : ""
-                                }">
+                                }
+                            >
 
-                                <button
-                                    type="button"
-                                    class="page-link"
-                                    id="memberNext">
+                                Next
 
-                                    Next
+                            </button>
 
-                                </button>
+                        </li>
 
-                            </li>
 
-                        </ul>
+                    </ul>
 
-                    </nav>
+                </nav>
 
-                </div>
 
             </div>
-        `;
+
+        </div>
+
+    `;
 
 
-        /* =================================================
-           PREVIOUS BUTTON
-        ================================================= */
+    /* =============================================
+       PREVIOUS BUTTON
+    ============================================= */
 
-        const previous =
-            document.getElementById(
-                "memberPrevious"
-            );
-
-        if (previous) {
-
-            previous.addEventListener(
-                "click",
-                function() {
-
-                    if (currentPage > 1) {
-
-                        currentPage--;
-
-                        display(currentList);
-                    }
-
-                }
-            );
-        }
+    const previous =
+        document.getElementById("memberPrevious");
 
 
-        /* =================================================
-           NEXT BUTTON
-        ================================================= */
+    if (previous) {
 
-        const next =
-            document.getElementById(
-                "memberNext"
-            );
+        previous.addEventListener(
+            "click",
+            function() {
 
-        if (next) {
+                if (currentPage > 1) {
 
-            next.addEventListener(
-                "click",
-                function() {
+                    currentPage--;
 
-                    if (
-                        currentPage <
-                        totalPages
-                    ) {
-
-                        currentPage++;
-
-                        display(currentList);
-                    }
+                    display(currentList);
 
                 }
-            );
-        }
+
+            }
+        );
+
+    }
 
 
-        /* =================================================
-           PAGE NUMBER BUTTONS
-        ================================================= */
+    /* =============================================
+       NEXT BUTTON
+    ============================================= */
 
-        pagination
-            .querySelectorAll(
-                "[data-member-page]"
-            )
-            .forEach(function(button) {
+    const next =
+        document.getElementById("memberNext");
+
+
+    if (next) {
+
+        next.addEventListener(
+            "click",
+            function() {
+
+                if (currentPage < totalPages) {
+
+                    currentPage++;
+
+                    display(currentList);
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* =============================================
+       PAGE NUMBER BUTTONS
+    ============================================= */
+
+    pagination
+        .querySelectorAll("[data-member-page]")
+        .forEach(
+            function(button) {
 
                 button.addEventListener(
                     "click",
@@ -1921,200 +2017,10 @@ function display(list = members) {
                     }
                 );
 
-            });
-    }
-
-/* =====================================================
-   ADD MEMBER - MYSQL
-===================================================== */
-
-form.addEventListener(
-    "submit",
-    async function(e) {
-
-        e.preventDefault();
-
-
-        const memberId =
-            document.getElementById(
-                "addMemberId"
-            ).value.trim();
-
-
-        const name =
-            document.getElementById(
-                "addName"
-            ).value.trim();
-
-
-        const email =
-            document.getElementById(
-                "addEmail"
-            ).value.trim();
-
-
-        const phone =
-            document.getElementById(
-                "addPhone"
-            ).value.trim();
-
-
-        const membership =
-            document.getElementById(
-                "addMembership"
-            ).value;
-
-
-        /* VALIDATION */
-
-        if (
-            !memberId ||
-            !name ||
-            !email ||
-            !phone ||
-            !membership
-        ) {
-
-            alert(
-                "Please fill all fields."
-            );
-
-            return;
-
-        }
-
-
-        /* PHONE VALIDATION */
-
-        if (
-            !/^[6-9][0-9]{9}$/.test(phone)
-        ) {
-
-            alert(
-                "Please enter a valid 10-digit phone number."
-            );
-
-            return;
-
-        }
-
-
-        /* SAVE TO MYSQL */
-
-        try {
-
-            const response =
-                await fetch(
-                    "http://127.0.0.1:8000/api/members/",
-                    {
-                        method: "POST",
-
-                        headers: {
-                            "Content-Type":
-                                "application/json"
-                        },
-
-                        body: JSON.stringify({
-
-                            member_id:
-                                memberId,
-
-                            name:
-                                name,
-
-                            email:
-                                email,
-
-                            phone:
-                                phone,
-
-                            membership:
-                                membership,
-
-                            status:
-                                "Active"
-
-                        })
-
-                    }
-                );
-
-
-            const responseText =
-    await response.text();
-
-let data;
-
-try {
-
-    data =
-        JSON.parse(responseText);
-
-} catch (error) {
-
-    console.error(
-        "Backend response:",
-        responseText
-    );
-
-    throw new Error(
-        "Server error. Check Django terminal."
-    );
+            }
+        );
 
 }
-
-
-            if (
-                !response.ok ||
-                !data.success
-            ) {
-
-                throw new Error(
-                    data.message ||
-                    "Unable to add member"
-                );
-
-            }
-
-
-            /* RELOAD DATA FROM MYSQL */
-
-            currentPage = 1;
-
-            await loadMembersFromBackend();
-
-
-            /* RESET FORM */
-
-            form.reset();
-
-
-            updateDashboard();
-
-
-            alert(
-                "Member added successfully!"
-            );
-
-
-        } catch (error) {
-
-            console.error(
-                "Error adding member:",
-                error
-            );
-
-
-            alert(
-                error.message ||
-                "Unable to add member."
-            );
-
-        }
-
-    }
-);
-
 
     /* =====================================================
        SEARCH MEMBER
@@ -2138,17 +2044,33 @@ try {
                         .trim();
 
 
+                if (!text) {
+
+                    currentPage = 1;
+
+                    display(
+                        members
+                    );
+
+                    return;
+
+                }
+
+
                 const filtered =
                     members.filter(
                         function(member) {
 
                             const data =
-                                `${member.id}
-                                 ${member.name}
-                                 ${member.email}
-                                 ${member.phone}
-                                 ${member.membership}`
-                                    .toLowerCase();
+
+                                `${member.member_id}
+                                ${member.name}
+                                ${member.email}
+                                ${member.phone}
+                                ${member.membership}
+                                ${member.status}`
+
+                                .toLowerCase();
 
 
                             return data.includes(
@@ -2162,10 +2084,13 @@ try {
                 currentPage = 1;
 
 
-                display(filtered);
+                display(
+                    filtered
+                );
 
             }
         );
+
     }
 
 
@@ -2174,116 +2099,270 @@ try {
     ===================================================== */
 
     window.editMember =
-    function(memberId) {
+        function(memberId) {
 
-        console.log(
-            "Edit clicked for ID:",
-            memberId
-        );
+            const member =
+                members.find(
+                    function(m) {
 
-        const member =
-            members.find(
-                function(m) {
+                        return String(m.id) ===
+                            String(memberId);
 
-                    return String(m.id) ===
-                        String(memberId);
-
-                }
-            );
+                    }
+                );
 
 
-        if (!member) {
+            if (!member) {
 
-            console.error(
-                "Member not found:",
-                memberId
-            );
+                alert(
+                    "Member not found."
+                );
 
-            return;
+                return;
 
-        }
+            }
 
 
-        const fields = {
+            const fields = {
 
-            editMemberId:
-                member.id,
+                editMemberId:
+                    member.id,
 
-            editName:
-                member.name,
+                editName:
+                    member.name,
 
-            editEmail:
-                member.email,
+                editEmail:
+                    member.email,
 
-            editPhone:
-                member.phone,
+                editPhone:
+                    member.phone,
 
-            editMembership:
-                member.membership,
+                editMembership:
+                    member.membership,
 
-            editStatus:
-                member.status
+                editStatus:
+                    member.status
+
+            };
+
+
+            Object.entries(fields)
+                .forEach(
+                    function([id, value]) {
+
+                        const element =
+                            document.getElementById(
+                                id
+                            );
+
+                        if (element) {
+
+                            element.value =
+                                value || "";
+
+                        }
+
+                    }
+                );
+
+
+            const modal =
+                document.getElementById(
+                    "editMemberModal"
+                );
+
+
+            if (
+                modal &&
+                typeof bootstrap !==
+                "undefined"
+            ) {
+
+                bootstrap.Modal
+                    .getOrCreateInstance(
+                        modal
+                    )
+                    .show();
+
+            }
 
         };
 
 
-        Object.entries(fields)
-            .forEach(
-                function([id, value]) {
+    /* =====================================================
+       UPDATE MEMBER
+    ===================================================== */
 
-                    const element =
-                        document.getElementById(id);
+    const editForm =
+        document.getElementById(
+            "editMemberForm"
+        );
 
-                    if (element) {
-                        element.value = value;
+
+    if (editForm) {
+
+        editForm.addEventListener(
+            "submit",
+            async function(e) {
+
+                e.preventDefault();
+
+
+                const memberId =
+                    document.getElementById(
+                        "editMemberId"
+                    ).value;
+
+
+                try {
+
+                    const response =
+                        await fetch(
+                            `http://127.0.0.1:8000/api/members/${memberId}/`,
+                            {
+                                method: "PUT",
+
+                                headers: {
+                                    "Content-Type":
+                                        "application/json"
+                                },
+
+                                body: JSON.stringify({
+
+                                    name:
+                                        document.getElementById(
+                                            "editName"
+                                        ).value.trim(),
+
+                                    email:
+                                        document.getElementById(
+                                            "editEmail"
+                                        ).value.trim(),
+
+                                    phone:
+                                        document.getElementById(
+                                            "editPhone"
+                                        ).value.trim(),
+
+                                    membership:
+                                        document.getElementById(
+                                            "editMembership"
+                                        ).value,
+
+                                    status:
+                                        document.getElementById(
+                                            "editStatus"
+                                        ).value
+
+                                })
+
+                            }
+                        );
+
+
+                    const data =
+                        await response.json();
+
+
+                    if (
+                        !response.ok ||
+                        !data.success
+                    ) {
+
+                        throw new Error(
+                            data.message ||
+                            "Unable to update member"
+                        );
+
                     }
 
+
+                    await loadMembersFromBackend();
+
+
+                    const modal =
+                        document.getElementById(
+                            "editMemberModal"
+                        );
+
+
+                    if (modal) {
+
+                        bootstrap.Modal
+                            .getOrCreateInstance(
+                                modal
+                            )
+                            .hide();
+
+                    }
+
+
+                    if (
+                        typeof updateDashboard ===
+                        "function"
+                    ) {
+
+                        updateDashboard();
+
+                    }
+
+
+                    alert(
+                        "Member updated successfully!"
+                    );
+
+
+                } catch (error) {
+
+                    console.error(
+                        "Error updating member:",
+                        error
+                    );
+
+
+                    alert(
+                        error.message ||
+                        "Unable to update member."
+                    );
+
                 }
-            );
+
+            }
+        );
+
+    }
 
 
-        const modal =
-            document.getElementById(
-                "editMemberModal"
-            );
+    /* =====================================================
+       DELETE MEMBER
+    ===================================================== */
+
+    window.deleteMember =
+        async function(memberId) {
+
+            const member =
+                members.find(
+                    function(m) {
+
+                        return String(m.id) ===
+                            String(memberId);
+
+                    }
+                );
 
 
-        if (
-            modal &&
-            typeof bootstrap !== "undefined"
-        ) {
-
-            bootstrap.Modal
-                .getOrCreateInstance(modal)
-                .show();
-
-        }
-
-    };
-
-/* =====================================================
-   UPDATE MEMBER - MYSQL
-===================================================== */
-
-const editForm =
-    document.getElementById(
-        "editMemberForm"
-    );
+            if (!member) {
+                return;
+            }
 
 
-if (editForm) {
-
-    editForm.addEventListener(
-        "submit",
-        async function(e) {
-
-            e.preventDefault();
-
-
-            const memberId =
-                document.getElementById(
-                    "editMemberId"
-                ).value;
+            if (
+                !confirm(
+                    `Are you sure you want to delete ${member.name}?`
+                )
+            ) {
+                return;
+            }
 
 
             try {
@@ -2292,41 +2371,7 @@ if (editForm) {
                     await fetch(
                         `http://127.0.0.1:8000/api/members/${memberId}/`,
                         {
-                            method: "PUT",
-
-                            headers: {
-                                "Content-Type":
-                                    "application/json"
-                            },
-
-                            body: JSON.stringify({
-
-                                name:
-                                    document.getElementById(
-                                        "editName"
-                                    ).value.trim(),
-
-                                email:
-                                    document.getElementById(
-                                        "editEmail"
-                                    ).value.trim(),
-
-                                phone:
-                                    document.getElementById(
-                                        "editPhone"
-                                    ).value.trim(),
-
-                                membership:
-                                    document.getElementById(
-                                        "editMembership"
-                                    ).value,
-
-                                status:
-                                    document.getElementById(
-                                        "editStatus"
-                                    ).value
-
-                            })
+                            method: "DELETE"
                         }
                     );
 
@@ -2342,187 +2387,50 @@ if (editForm) {
 
                     throw new Error(
                         data.message ||
-                        "Unable to update member"
+                        "Unable to delete member"
                     );
 
                 }
 
-
-                /* RELOAD MEMBERS FROM MYSQL */
 
                 await loadMembersFromBackend();
 
 
-                /* CLOSE MODAL */
+                if (
+                    typeof updateDashboard ===
+                    "function"
+                ) {
 
-                const modal =
-                    document.getElementById(
-                        "editMemberModal"
-                    );
-
-
-                if (modal) {
-
-                    bootstrap.Modal
-                        .getOrCreateInstance(
-                            modal
-                        )
-                        .hide();
+                    updateDashboard();
 
                 }
 
 
-                updateDashboard();
-
-
                 alert(
-                    "Member updated successfully!"
+                    "Member deleted successfully!"
                 );
 
 
             } catch (error) {
 
                 console.error(
-                    "Error updating member:",
+                    "Error deleting member:",
                     error
                 );
 
 
                 alert(
                     error.message ||
-                    "Unable to update member."
+                    "Unable to delete member."
                 );
 
             }
 
-        }
-    );
-
-}
-
-/* =====================================================
-   DELETE MEMBER - MYSQL
-===================================================== */
-
-window.deleteMember =
-    async function(memberId) {
-
-        const member =
-            members.find(
-                function(m) {
-
-                    return String(m.id) ===
-                        String(memberId);
-
-                }
-            );
-
-
-        if (!member) {
-
-            console.error(
-                "Member not found:",
-                memberId
-            );
-
-            return;
-
-        }
-
-
-        if (
-            !confirm(
-                `Are you sure you want to delete ${member.name}?`
-            )
-        ) {
-            return;
-        }
-
-
-        try {
-
-            const response =
-                await fetch(
-                    `http://127.0.0.1:8000/api/members/${memberId}/`,
-                    {
-                        method: "DELETE"
-                    }
-                );
-
-
-            const data =
-                await response.json();
-
-
-            if (
-                !response.ok ||
-                !data.success
-            ) {
-
-                throw new Error(
-                    data.message ||
-                    "Unable to delete member"
-                );
-
-            }
-
-
-            /* RELOAD MEMBERS FROM MYSQL */
-
-            await loadMembersFromBackend();
-
-
-            updateDashboard();
-
-
-            alert(
-                "Member deleted successfully!"
-            );
-
-
-        } catch (error) {
-
-            console.error(
-                "Error deleting member:",
-                error
-            );
-
-
-            alert(
-                error.message ||
-                "Unable to delete member."
-            );
-
-        }
-
-    };
+        };
 
 
     /* =====================================================
-       DATA UPDATE
-    ===================================================== */
-
-    window.addEventListener(
-        "libraryDataChanged",
-        function() {
-
-            members =
-                getData(
-                    KEYS.members
-                );
-
-
-            currentPage = 1;
-
-
-            display(members);
-
-        }
-    );
-
-
-    /* =====================================================
-       INITIAL DISPLAY
+       INITIAL LOAD - ONLY ONCE
     ===================================================== */
 
     loadMembersFromBackend();
@@ -2898,195 +2806,203 @@ function initBooks() {
 
             display();
         };
+/* =====================================================
+   ADD BOOK
+   SAVE TO MYSQL THROUGH DJANGO API
+===================================================== */
+
+form.addEventListener(
+    "submit",
+    async function (e) {
+
+        e.preventDefault();
+
+        /* =============================================
+           GET FORM VALUES
+        ============================================= */
+
+        const titleElement =
+            document.getElementById("bookTitle");
+
+        const authorElement =
+            document.getElementById("bookAuthor");
+
+        const categoryElement =
+            document.getElementById("bookCategory");
+
+        const departmentElement =
+            document.getElementById("bookDepartment");
+
+        const statusElement =
+            document.getElementById("bookStatus");
 
 
-    /* =====================================================
-       ADD BOOK
-       
-       THIS WAS MISSING IN YOUR CODE.
-    ===================================================== */
+        /* =============================================
+           CHECK FIELDS
+        ============================================= */
 
-    form.addEventListener(
-        "submit",
-        function(e) {
+        if (
+            !titleElement ||
+            !authorElement ||
+            !categoryElement ||
+            !departmentElement ||
+            !statusElement
+        ) {
+            console.error(
+                "Book form fields not found."
+            );
 
-            e.preventDefault();
+            return;
+        }
 
 
-            /*
-                Always get the latest books
-                from localStorage.
-            */
+        /* =============================================
+           FORM VALUES
+        ============================================= */
 
-            books =
-                getData(
-                    KEYS.books
+        const title =
+            titleElement.value.trim();
+
+        const author =
+            authorElement.value.trim();
+
+        const category =
+            categoryElement.value.trim();
+
+        const department =
+            departmentElement.value.trim();
+
+        const status =
+            statusElement.value;
+
+
+        /* =============================================
+           VALIDATION
+        ============================================= */
+
+        if (
+            !title ||
+            !author ||
+            !category ||
+            !department ||
+            !status
+        ) {
+
+            alert(
+                "Please fill all book fields."
+            );
+
+            return;
+        }
+
+
+        /* =============================================
+           SAVE BOOK TO MYSQL
+        ============================================= */
+
+        try {
+
+            const response =
+                await fetch(
+                    "http://127.0.0.1:8000/api/books/",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+
+                            book_name:
+                                title,
+
+                            author_name:
+                                author,
+
+                            category:
+                                category,
+
+                            department:
+                                department,
+
+                            status:
+                                status,
+
+                            available_copies:
+                                1
+
+                        })
+                    }
                 );
+
+
+            const data =
+                await response.json();
 
 
             /* =============================================
-               GET FORM VALUES
+               HANDLE API ERROR
             ============================================= */
 
-            const titleElement =
-                document.getElementById(
-                    "bookTitle"
-                );
-
-
-            const authorElement =
-                document.getElementById(
-                    "bookAuthor"
-                );
-
-
-            const categoryElement =
-                document.getElementById(
-                    "bookCategory"
-                );
-
-
-            const departmentElement =
-                document.getElementById(
-                    "bookDepartment"
-                );
-
-
-            const statusElement =
-                document.getElementById(
-                    "bookStatus"
-                );
-
-
-            /*
-                Check that all required
-                elements exist.
-            */
-
             if (
-                !titleElement ||
-                !authorElement ||
-                !categoryElement ||
-                !departmentElement ||
-                !statusElement
+                !response.ok ||
+                !data.success
             ) {
 
-                console.error(
-                    "Book form fields not found. Check the IDs in your HTML."
+                throw new Error(
+                    data.message ||
+                    "Unable to add book."
                 );
 
-                return;
             }
 
 
-            const title =
-                titleElement.value.trim();
+            /* =============================================
+               NOTIFICATION
+            ============================================= */
 
-
-            const author =
-                authorElement.value.trim();
-
-
-            const category =
-                categoryElement.value.trim();
-
-
-            const department =
-                departmentElement.value.trim();
-
-
-            const status =
-                statusElement.value;
+            notifyNewBook(
+                title,
+                author
+            );
 
 
             /* =============================================
-               VALIDATION
+               RESET PAGINATION
+            ============================================= */
+
+            bookPage = 1;
+
+            departmentPage = 1;
+
+
+            /* =============================================
+               RELOAD BOOKS FROM MYSQL
             ============================================= */
 
             if (
-                !title ||
-                !author ||
-                !category ||
-                !department ||
-                !status
+                typeof loadBooksFromBackend ===
+                "function"
             ) {
 
-                alert(
-                    "Please fill all book fields."
-                );
+                await loadBooksFromBackend();
 
-                return;
+            } else {
+
+                const booksResponse =
+                    await fetch(
+                        "http://127.0.0.1:8000/api/books/"
+                    );
+
+                const booksData =
+                    await booksResponse.json();
+
+                books =
+                    booksData.books || [];
+
             }
-
-
-            /* =============================================
-               CREATE NEW BOOK
-            ============================================= */
-
-            const newBook = {
-
-                id:
-                    getNextId(
-                        KEYS.books,
-                        "B"
-                    ),
-
-                title:
-                    title,
-
-                author:
-                    author,
-
-                category:
-                    category,
-
-                department:
-                    department,
-
-                status:
-                    status
-
-            };
-
-
-            /* =============================================
-               ADD BOOK TO ARRAY
-            ============================================= */
-
-books.push(
-    newBook
-);
-
-
-/* =============================================
-   SAVE BOOK TO LOCAL STORAGE
-============================================= */
-
-saveData(
-    KEYS.books,
-    books
-);
-
-
-/* =============================================
-   NEW BOOK NOTIFICATION
-============================================= */
-
-notifyNewBook(
-    newBook.title,
-    newBook.author
-);
-
-
-/*
-    IMPORTANT:
-    Start from page 1 so the newly
-    added book can immediately be seen.
-*/
-
-bookPage = 1;
-
-departmentPage = 1;
 
 
             /* =============================================
@@ -3110,22 +3026,22 @@ departmentPage = 1;
             updateDepartmentSummary();
 
 
-            /* 
+            /* =============================================
                REFRESH DASHBOARD
-            */
+            ============================================= */
 
             updateDashboard();
 
 
-            /* 
-               CLEAR FORM
-            */
+            /* =============================================
+               RESET FORM
+            ============================================= */
 
             form.reset();
 
 
             /* =============================================
-               CLOSE MODAL IF BOOK FORM IS IN MODAL
+               CLOSE MODAL
             ============================================= */
 
             const addBookModal =
@@ -3145,6 +3061,7 @@ departmentPage = 1;
                         addBookModal
                     )
                     .hide();
+
             }
 
 
@@ -3156,9 +3073,22 @@ departmentPage = 1;
                 "Book added successfully!"
             );
 
-        }
-    );
+        } catch (error) {
 
+            console.error(
+                "Error adding book:",
+                error
+            );
+
+            alert(
+                error.message ||
+                "Unable to add book."
+            );
+
+        }
+
+    }
+);
 
     /* =====================================================
        BOOK STATISTICS
@@ -4659,52 +4589,147 @@ function initIssueReturn() {
 
 
 /* =====================================================
-   GET ISSUED RECORDS
+   ISSUE BOOK - SAVE TO MYSQL
 ===================================================== */
 
-async function getIssuedRecords() {
+form.addEventListener("submit", async function (e) {
+
+    e.preventDefault();
+
+    const selectedBookId = bookSelect.value;
+    const selectedMemberId = memberSelect.value;
+    const selectedIssueDate = issueDate.value;
+    const selectedReturnDate = returnDate.value;
+
+    /* VALIDATION */
+
+    if (!selectedBookId) {
+        alert("Please select a book.");
+        return;
+    }
+
+    if (!selectedMemberId) {
+        alert("Please select a member.");
+        return;
+    }
+
+    if (!selectedIssueDate) {
+        alert("Please select issue date.");
+        return;
+    }
+
+    if (!selectedReturnDate) {
+        alert("Please select return date.");
+        return;
+    }
+
+    if (selectedReturnDate < selectedIssueDate) {
+        alert("Return date cannot be before issue date.");
+        return;
+    }
 
     try {
 
-        const response =
-            await fetch(
-                "http://127.0.0.1:8000/api/issues/"
-            );
+        /* SEND ISSUE REQUEST TO DJANGO */
 
-        const data =
-            await response.json();
+        const response = await fetch(
+            "http://127.0.0.1:8000/api/issues/",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    book_id: Number(selectedBookId),
+                    member_id: selectedMemberId,
+                    issue_date: selectedIssueDate,
+                    return_date: selectedReturnDate
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        console.log(
+            "ISSUE BOOK RESPONSE:",
+            data
+        );
+
+        /* API ERROR */
 
         if (!response.ok || !data.success) {
 
             throw new Error(
                 data.message ||
-                "Unable to load issued books"
+                "Unable to issue book."
             );
+
         }
 
-        issues =
-            data.issues || [];
+        /* RELOAD DATA FROM MYSQL */
 
-        return issues.filter(
-            function(issue) {
+        await loadOptions();
 
-                return issue.status === "Issued";
+        /* RESET PAGINATION */
 
-            }
+        issuedCurrentPage = 1;
+        returnCurrentPage = 1;
+
+        /* REFRESH TABLES */
+
+        await displayIssuedTable();
+        await displayReturnTable();
+
+        /* REFRESH DASHBOARD */
+
+        if (
+            typeof updateDashboard ===
+            "function"
+        ) {
+
+            await updateDashboard();
+
+        }
+
+        /* RESET FORM */
+
+        form.reset();
+
+        issueDate.value =
+            today();
+
+        issueDate.min =
+            today();
+
+        issueDate.max =
+            today();
+
+        returnDate.min =
+            today();
+
+        /* SUCCESS */
+
+        alert(
+            "Book issued successfully!"
         );
 
     } catch (error) {
 
         console.error(
-            "Error loading issued books:",
+            "ISSUE BOOK ERROR:",
             error
         );
 
-        return [];
+        alert(
+            error.message ||
+            "Unable to issue book."
+        );
 
     }
-}
 
+});
 
 /* =====================================================
    GET RETURNED RECORDS
@@ -5486,37 +5511,26 @@ async function displayIssuedTable() {
 /* =====================================================
    ADD MEMBER - MYSQL
 ===================================================== */
-
 form.addEventListener(
     "submit",
     async function(e) {
 
         e.preventDefault();
 
-
-        const memberId =
-            document.getElementById(
-                "addMemberId"
-            ).value.trim();
-
-
         const name =
             document.getElementById(
                 "addName"
             ).value.trim();
-
 
         const email =
             document.getElementById(
                 "addEmail"
             ).value.trim();
 
-
         const phone =
             document.getElementById(
                 "addPhone"
             ).value.trim();
-
 
         const membership =
             document.getElementById(
@@ -5527,16 +5541,13 @@ form.addEventListener(
         /* VALIDATION */
 
         if (
-            !memberId ||
             !name ||
             !email ||
             !phone ||
             !membership
         ) {
 
-            alert(
-                "Please fill all fields."
-            );
+            alert("Please fill all fields.");
 
             return;
 
@@ -5558,6 +5569,20 @@ form.addEventListener(
         }
 
 
+        /* PREVENT DOUBLE SUBMISSION */
+
+        const submitButton =
+            form.querySelector(
+                'button[type="submit"]'
+            );
+
+        if (submitButton) {
+
+            submitButton.disabled = true;
+
+        }
+
+
         try {
 
             const response =
@@ -5573,25 +5598,18 @@ form.addEventListener(
 
                         body: JSON.stringify({
 
-                            member_id:
-                                memberId,
+                            name: name,
 
-                            name:
-                                name,
+                            email: email,
 
-                            email:
-                                email,
+                            phone: phone,
 
-                            phone:
-                                phone,
+                            membership: membership,
 
-                            membership:
-                                membership,
-
-                            status:
-                                "Active"
+                            status: "Active"
 
                         })
+
                     }
                 );
 
@@ -5613,9 +5631,12 @@ form.addEventListener(
             }
 
 
-            /* RELOAD MEMBERS FROM MYSQL */
+            /* RESET TO FIRST PAGE */
 
             currentPage = 1;
+
+
+            /* RELOAD MEMBERS */
 
             await loadMembersFromBackend();
 
@@ -5645,6 +5666,16 @@ form.addEventListener(
                 error.message ||
                 "Unable to add member."
             );
+
+        } finally {
+
+            /* ENABLE BUTTON AGAIN */
+
+            if (submitButton) {
+
+                submitButton.disabled = false;
+
+            }
 
         }
 
@@ -6223,11 +6254,7 @@ if (joiningDate) {
 
 
         if (previewEmail) {
-
-            previewEmail.textContent =
-                profile.email ||
-                "admin@library.com";
-
+            previewEmail.textContent = profile.email || "";
         }
 
   if (previewPhoto && previewIcon) {
@@ -7560,18 +7587,6 @@ function handleNotificationClick(notification) {
             break;
 
 
-        case "extension-request":
-
-        case "extension-approved":
-
-        case "extension-rejected":
-
-            window.location.href =
-                "extension-requests.html";
-
-            break;
-
-
         case "announcement":
 
             // Stay on current page
@@ -8223,7 +8238,6 @@ function notifyBookDueReminder(
 
     let message = "";
 
-
     // 2 days before
     if (daysRemaining === 2) {
 
@@ -8231,7 +8245,6 @@ function notifyBookDueReminder(
             `The book "${bookTitle}" issued to ${memberName} is due in 2 days.`;
 
     }
-
 
     // 1 day before
     else if (daysRemaining === 1) {
@@ -8592,367 +8605,47 @@ function checkCalendarAnnouncement() {
 
 }
 
-/* =========================================================
-   EXTENSION REQUEST
-   GLOBAL LMS INTEGRATION
-========================================================= */
+/* =====================================================
+   GLOBAL GET ISSUED RECORDS
+===================================================== */
 
+window.getIssuedRecords = async function () {
 
-(function () {
+    try {
 
+        const response = await fetch(
+            "http://127.0.0.1:8000/api/issues/"
+        );
 
-    const EXTENSION_REQUEST_KEY =
-        "libraryExtensionRequests";
+        const data = await response.json();
 
+        if (!response.ok || !data.success) {
 
+            throw new Error(
+                data.message ||
+                "Unable to load issued books."
+            );
 
-    /* =====================================================
-       >>> LOCAL STORAGE <<<
-       GET EXTENSION REQUESTS
-    ===================================================== */
+        }
 
-    function getGlobalExtensionRequests() {
+        const issueList =
+            data.issues || [];
 
+        return issueList.filter(
+            function (issue) {
+                return issue.status === "Issued";
+            }
+        );
 
-        try {
+    } catch (error) {
 
-
-            return JSON.parse(
-
-                localStorage.getItem(
-                    EXTENSION_REQUEST_KEY
-                )
-
-            ) || [];
-
-
-        } catch (
+        console.error(
+            "Error loading issued books:",
             error
-        ) {
-
-
-            console.error(
-
-                "Extension request storage error:",
-
-                error
-
-            );
-
-
-            return [];
-
-        }
-
-    }
-
-
-
-    /* =====================================================
-       GET PENDING COUNT
-    ===================================================== */
-
-    function getPendingExtensionRequestCount() {
-
-
-        return getGlobalExtensionRequests()
-
-            .filter(
-
-                function (
-                    request
-                ) {
-
-
-                    return (
-
-                        request.status ===
-                        "Pending"
-
-                    );
-
-                }
-
-            )
-
-            .length;
-
-    }
-
-
-
-    /* =====================================================
-       ADD CSS AUTOMATICALLY
-    ===================================================== */
-
-    function addExtensionNavbarStyles() {
-
-
-        if (
-
-            document.getElementById(
-                "extensionNavbarStyles"
-            )
-
-        ) {
-
-            return;
-
-        }
-
-
-
-        const style =
-            document.createElement(
-                "style"
-            );
-
-
-
-        style.id =
-            "extensionNavbarStyles";
-
-
-
-        style.innerHTML = `
-
-
-            .navbar-request-icon {
-
-                position: relative;
-
-                display: inline-flex;
-
-                align-items: center;
-
-                justify-content: center;
-
-                color: #212529;
-
-                text-decoration: none;
-
-                cursor: pointer;
-
-                transition:
-                    color 0.2s ease;
-
-            }
-
-
-            .navbar-request-icon:hover {
-
-                color: #0d6efd;
-
-            }
-
-
-            .request-count-badge {
-
-                position: absolute;
-
-                top: -7px;
-
-                right: -9px;
-
-                display: none;
-
-                min-width: 18px;
-
-                height: 18px;
-
-                padding: 0 5px;
-
-                align-items: center;
-
-                justify-content: center;
-
-                background-color: #dc3545;
-
-                color: #ffffff !important;
-
-                border:
-                    2px solid
-                    #ffffff;
-
-                border-radius: 50px;
-
-                font-size: 10px;
-
-                font-weight: 700;
-
-            }
-
-
-            .request-count-badge.show {
-
-                display: inline-flex;
-
-            }
-
-
-            body.dark-mode
-            .navbar-request-icon {
-
-                color:
-                    #ffffff !important;
-
-            }
-
-
-            body.dark-mode
-            .navbar-request-icon:hover {
-
-                color:
-                    #60a5fa !important;
-
-            }
-
-
-            body.dark-mode
-            .request-count-badge {
-
-                border-color:
-                    #1e293b;
-
-            }
-
-
-        `;
-
-
-
-        document.head.appendChild(
-            style
         );
 
-    }
-
-
-    /* =====================================================
-       UPDATE BADGE
-    ===================================================== */
-
-    function updateExtensionRequestBadge() {
-
-
-        const badge =
-
-            document.getElementById(
-                "globalExtensionRequestBadge"
-            ) ||
-
-            document.getElementById(
-                "requestNavbarBadge"
-            );
-
-
-
-        if (
-            !badge
-        ) {
-
-            return;
-
-        }
-
-
-
-        const count =
-            getPendingExtensionRequestCount();
-
-
-
-        badge.textContent =
-
-            count > 99
-
-                ? "99+"
-
-                : count;
-
-
-
-        badge.classList.toggle(
-
-            "show",
-
-            count > 0
-
-        );
+        return [];
 
     }
 
-
-
-    /* =====================================================
-       PAGE LOAD
-    ===================================================== */
-
-    document.addEventListener(
-
-        "DOMContentLoaded",
-
-        function () {
-
-
-            addExtensionNavbarStyles();
-
-
-            updateExtensionRequestBadge();
-
-        }
-
-    );
-
-
-
-    /* =====================================================
-       SAME PAGE CHANGE
-    ===================================================== */
-
-    window.addEventListener(
-
-        "libraryDataChanged",
-
-        function () {
-
-
-            updateExtensionRequestBadge();
-
-        }
-
-    );
-
-
-
-    /* =====================================================
-       OTHER TAB CHANGE
-    ===================================================== */
-
-    window.addEventListener(
-
-        "storage",
-
-        function (
-            event
-        ) {
-
-
-            if (
-
-                event.key ===
-                EXTENSION_REQUEST_KEY
-
-            ) {
-
-
-                updateExtensionRequestBadge();
-
-            }
-
-        }
-
-    );
-
-
-})();
+};
